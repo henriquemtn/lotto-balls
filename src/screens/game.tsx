@@ -8,16 +8,12 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
-import TopBar from "../components/TopBar";
 import Roulette from "../components/Roulette";
-import { FontAwesome } from "@expo/vector-icons";
 import SelectedNumberCard from "../components/SelectedNumberCard";
 import { placeBet } from "../services/betService";
-import Card from "../components/Card";
 import Coins from "../components/Coins";
 import { useNavigation } from "@react-navigation/native";
 import { StackTypes } from "../routes/router";
-import { FontAwesome6 } from "@expo/vector-icons";
 
 type BetResult = {
   numerosGerados: any;
@@ -26,14 +22,18 @@ type BetResult = {
 };
 
 export default function Game() {
-  const [betAmount, setBetAmount] = useState(0);
+  const [betAmount, setBetAmount] = useState(1);
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
   const [result, setResult] = useState<BetResult | null>(null);
 
   const navigation = useNavigation<StackTypes>();
   const [rouletteNumbers, setRouletteNumbers] = useState<number[]>([]);
-  const [betResults, setBetResults] = useState<{ numerosGerados: any; acertos: number; premio: number }[]>([]);
-  const [selectedNumbersList, setSelectedNumbersList] = useState<number[][]>([]);
+  const [betResults, setBetResults] = useState<
+    { numerosGerados: any; acertos: number; premio: number }[]
+  >([]);
+  const [selectedNumbersList, setSelectedNumbersList] = useState<number[][]>(
+    []
+  );
 
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -45,10 +45,21 @@ export default function Game() {
   ]);
 
   const toggleCardActivation = (index: number) => {
-    const updatedCards = [...cards];
-    updatedCards[index].isActive = !updatedCards[index].isActive;
-    setCards(updatedCards);
+    setCards(prevCards => {
+      const updatedCards = [...prevCards];
+      if (updatedCards[index].isActive) {
+        // Se o cartão estiver ativo, desative-o e remova a matriz
+        updatedCards[index].isActive = false;
+        updatedCards[index].selectedNumbers = [];
+      } else {
+        // Se o cartão estiver inativo, ative-o e adicione uma nova matriz de números
+        updatedCards[index].isActive = true;
+        updatedCards[index].selectedNumbers = Array(6).fill(0);
+      }
+      return updatedCards;
+    });
   };
+  
 
   const generateRandomNumbers = () => {
     if (isPlaying) {
@@ -157,7 +168,9 @@ export default function Game() {
   };
 
   useEffect(() => {
-    const updatedSelectedNumbersList = cards.map((card) => card.selectedNumbers);
+    const updatedSelectedNumbersList = cards.map(
+      (card) => card.selectedNumbers
+    );
     setSelectedNumbersList(updatedSelectedNumbersList);
   }, [cards]);
 
@@ -204,7 +217,10 @@ export default function Game() {
     <View className="flex-row bg-[#150F0F] justify-center w-full h-full">
       <View className="w-[63%] p-1">
         {/* Roleta */}
-        <Roulette rouletteNumbers={rouletteNumbers} selectedNumbersList={selectedNumbersList} />
+        <Roulette
+          rouletteNumbers={rouletteNumbers}
+          selectedNumbersList={selectedNumbersList}
+        />
 
         <View className="flex-row w-full h-[75%] pt-[1px]">
           <View className="flex-col w-[50%]">
@@ -212,13 +228,7 @@ export default function Game() {
               <View key={index} className="w-full h-[52%] relative">
                 <ImageBackground
                   source={require("../../assets/card.png")}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    alignItems: "center",
-                    paddingTop: 1,
-                    paddingBottom: 2,
-                  }}
+                  className="w-full h-full items-center pt-[1px] pb-[2px]"
                 >
                   <View className="w-full justify-center flex-row p-[7px]">
                     {card.isActive ? (

@@ -1,41 +1,74 @@
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import React from "react";
 import TopBar from "../components/TopBar";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackTypes } from "../routes/router";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Dashboard() {
   const navigation = useNavigation<StackTypes>();
 
   return (
-    <View className="bg-[#151515] h-full w-full">
+    <LinearGradient colors={["#281411", "#090606"]} className="h-full w-full">
       <TopBar />
 
-      <View className="bg-[#2D2423] w-full h-[1px]" />
-
       <View className="px-5 flex-row justify-between h-full">
-        <View className="w-2/3 justify-between pr-10 mt-[65px] py-5">
-          <View className="h-[150px]">
-            <TouchableOpacity onPress={() => navigation.navigate("Shop")} className="flex-row w-2/3 h-[60px] bg-[#1E1E1E] rounded-md justify-center items-center">
-              <Ionicons name="cart" size={24} color='white' />
-              <Text className="text-white text-base ml-2">Shop</Text>
+        <View className="w-2/3 h-full justify-center items-center pr-10 mt-[10px] py-5">
+          <Image
+            source={require("../../assets/goldenlotto.png")}
+            className="w-[420px] h-[220px] mt-[35px]"
+          />
+          <View className="flex-row w-full justify-end items-end gap-1 mt-1">
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Shop")}
+              className="flex-row h-[60px] rounded-md justify-center items-center"
+            >
+              <Image
+                source={require("../../assets/social-icons.png")}
+                className="w-[70px] h-16 "
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Shop")}
+              className="flex-row h-[60px] bg-[#1E1E1E] rounded-md justify-center items-center"
+            >
+              <Image
+                source={require("../../assets/doc.png")}
+                className="w-[70px] h-16"
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Shop")}
+              className="flex-row h-[60px] bg-[#1E1E1E] rounded-md justify-center items-center"
+            >
+              <Image
+                source={require("../../assets/how-play.png")}
+                className="w-[224px] h-[68px]"
+              />
             </TouchableOpacity>
           </View>
         </View>
 
-        <View className="w-1/3 justify-between mt-[65px] py-5">
-          <View className="bg-slate-700 h-[100px] p-2">
-            <Text className="text-white text-base font-medium">
-              Patch Notes
-            </Text>
-            <Text className="text-[#D6D6D6] text-[14px]">Version 1.0.0!</Text>
-          </View>
-          <TouchableOpacity onPress={() => navigation.navigate("Game")} className="mt-4 w-full h-[60px] bg-[#FAB300] rounded-md justify-center items-center">
-            <Text className="text-white text-base">Play</Text>
+        <View className="w-1/3 justify-between mt-[55px] py-5">
+          <TouchableOpacity onPress={() => navigation.navigate("Shop")} className="w-full h-[120px]">
+            <Image
+              source={require("../../assets/freecoins.png")}
+              className="w-full h-full  rounded-md"
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Game")}
+            className="mt-4 w-full h-[150px] bg-[#FAB300] rounded-md justify-center items-center"
+          >
+            <Image
+              source={require("../../assets/playButton.png")}
+              className="w-full h-full  rounded-md"
+            />
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </LinearGradient>
   );
 }

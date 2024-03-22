@@ -1,14 +1,21 @@
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import TopBar from "../components/TopBar";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import { FontAwesome } from "@expo/vector-icons";
 import firestore from "@react-native-firebase/firestore";
-
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Shop() {
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
-  
+
   useEffect(() => {
     const unsubscribeAuth = auth().onAuthStateChanged((currentUser) => {
       setUser(currentUser);
@@ -47,32 +54,81 @@ export default function Shop() {
   };
 
   return (
-    <View className="bg-[#151515] h-full w-full">
+    <LinearGradient
+      colors={["#281411", "#090606"]}
+      className="bg-[#151515] h-full w-full"
+    >
       <TopBar />
-      <View className="bg-[#2D2423] mt-[60px] w-full h-[1px]" />
-
-      <View className="flex-row flex-1">
-        <View className="w-1/4 bg-[#202020] h-full">
-          <TouchableOpacity className="w-full bg-[#171717] p-5 flex-row items-center">
-            <FontAwesome name="star" size={24} color="white" />
-            <Text className="text-white font-medium ml-2">Destaque</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View className="w-3/4 p-5">
-          <View className="bg-[#171717] w-[125px] px-2 py-3 rounded-md border-[#FAB300] border-2 items-center justify-center">
-            <Image 
-            className="mb-2"
-            source={require('../../assets/gold-bar.png')}
+      <View className="w-full h-full">
+        <ScrollView horizontal={true} contentContainerStyle={styles.container}>
+          <TouchableOpacity
+            onPress={adicionarMoedas}
+            className="w-1/5 mx-[2px] ml-5"
+          >
+            <Image
+              className="h-[270px] w-full "
+              source={require("../../assets/freecoinsbuy.png")}
             />
-            <View className="w-3/4 bg-[#2D2423] h-[1px] my-2" />
-            <Text className="text-white font-medium">Moedas Grátis</Text>
-            <TouchableOpacity onPress={adicionarMoedas} className="bg-[#202020] w-full items-center py-1 mt-2">
-              <Text className="text-white font-medium">Comprar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={adicionarMoedas}
+            className="w-1/5  mx-[2px]"
+          >
+            <Image
+              className="h-[270px] w-full"
+              source={require("../../assets/buycoin.png")}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={adicionarMoedas}
+            className="w-1/5  mx-[2px]"
+          >
+            <Image
+              className="h-[270px] w-full"
+              source={require("../../assets/buycoin.png")}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={adicionarMoedas}
+            className="w-1/5  mx-[2px]"
+          >
+            <Image
+              className="h-[270px] w-full"
+              source={require("../../assets/buycoin.png")}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={adicionarMoedas}
+            className="w-1/5  mx-[2px]"
+          >
+            <Image
+              className="h-[270px] w-full"
+              source={require("../../assets/buycoin.png")}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={adicionarMoedas}
+            className="w-1/5  mx-[2px]"
+          >
+            <Image
+              className="h-[270px] w-full"
+              source={require("../../assets/buycoin.png")}
+            />
+          </TouchableOpacity>
+        </ScrollView>
       </View>
-    </View>
+    </LinearGradient>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    display: "flex",
+    flexDirection: "row",
+    width: "100%",
+    height: "100%",
+    marginTop: 25,
+    alignItems: "center",
+    justifyContent: "flex-start",
+  },
+});

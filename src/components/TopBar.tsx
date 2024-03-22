@@ -5,6 +5,8 @@ import firestore from "@react-native-firebase/firestore";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackTypes } from "../routes/router";
+import { LinearGradient } from "expo-linear-gradient";
+import Coins from "./Coins";
 
 export default function TopBar() {
   const navigation = useNavigation<StackTypes>();
@@ -66,7 +68,10 @@ export default function TopBar() {
   }
 
   return (
-    <View className="flex absolute z-10 bg-[#1E1E1E] flex-row justify-between w-full py-1 px-5">
+    <LinearGradient
+      colors={["#261411", "#090606"]}
+      className="flex absolute z-10 bg-[#1E1E1E] flex-row justify-between w-full py-1 px-5"
+    >
       <View className="flex flex-row gap-2 items-center">
         {user && user.photoURL ? (
           <View>
@@ -92,7 +97,7 @@ export default function TopBar() {
           </View>
         )}
         <View>
-          <Text className="text-[#D6D6D6] text-[14px]">Welcome back,</Text>
+          <Text className="text-[#D6D6D6] text-[14px]">Welcome,</Text>
           {user && (
             <Text className="text-white font-semibold text-base">
               {user.displayName}
@@ -101,36 +106,40 @@ export default function TopBar() {
         </View>
       </View>
 
-      <View className="flex-row items-center">
-        <TouchableOpacity className="bg-[#101010] flex-row p-1 rounded-full justify-center items-center">
-          <Image
-            source={require("../../assets/gold-bar.png")}
-            className="w-[28px] h-[19px]"
-          />
-          <Text className="ml-4 text-base text-white font-medium">
+      <View className="flex-row p-1 rounded-full justify-center items-center gap-1">
+        <Image
+          source={require("../../assets/coin.png")}
+          className="w-[38px] h-[29px]"
+        />
+        <View className="bg-[#4f2b1f] flex-row rounded-full items-center px-4">
+          <Text className="text-base text-white font-medium">
+            $ 
             {moedas}
           </Text>
-          <TouchableOpacity className="ml-2 w-6 h-6 rounded-full">
-            <Image source={require("../../assets/plus.png")} />
+        </View>
+        <TouchableOpacity className="">
+            <Image
+              source={require("../../assets/buy-coins.png")}
+              className="w-8 h-8"
+            />
           </TouchableOpacity>
-        </TouchableOpacity>
+      </View>
 
-        <View className="w-[2px] h-[35px] bg-[#585858] mx-4" />
-
-        <View className="flex-row gap-3">
+      <View className="flex-row items-center">
+        <View className="flex-row gap-1">
           <TouchableOpacity onPress={() => navigation.navigate("Home")}>
-            <Ionicons name="home" size={24} color="white" />
+            <Image source={require("../../assets/menu.png")} className="h-8 w-8"/>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => navigation.navigate("Shop")}>
-            <Ionicons name="cart" size={24} color="white" />
+          <Image source={require("../../assets/topshop.png")} className="h-8 w-8"/>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
-            <Ionicons name="person" size={24} color="white" />
+          <Image source={require("../../assets/topconfig.png")} className="h-8 w-8"/>
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </LinearGradient>
   );
 }

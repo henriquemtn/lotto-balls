@@ -42,11 +42,14 @@ export const placeBet = async (
     // Calcular a quantidade de acertos
     let acertos = 0;
     for (const number in selectedNumbersCount) {
-      if (rouletteNumbersCount[number]) {
+      if (number === '10') {
+        // Se o número sorteado for 10, considera-se automaticamente um acerto
+        acertos += 1;
+      } else if (rouletteNumbersCount[number]) {
+        // Caso contrário, verifica-se se o número selecionado coincide com algum número sorteado
         acertos += Math.min(rouletteNumbersCount[number], selectedNumbersCount[number]);
       }
     }
-
     // Calcular o prêmio com base na quantidade de acertos
     let premio = 0;
     switch (acertos) {
@@ -60,16 +63,16 @@ export const placeBet = async (
         premio = betAmount * 1;
         break;
       case 3:
-        premio = betAmount * 1.5;
+        premio = betAmount * 6;
         break;
       case 4:
-        premio = betAmount * 3;
+        premio = betAmount * 30;
         break;
       case 5:
-        premio = betAmount * 4;
+        premio = betAmount * 200;
         break;
       case 6:
-        premio = betAmount * 100;
+        premio = betAmount * 200;
         break;
       default:
         premio = 0;
