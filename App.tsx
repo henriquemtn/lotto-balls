@@ -5,7 +5,7 @@ import { StatusBar } from "react-native";
 export default function App() {
   return (
     <NavigationContainer>
-      <StatusBar backgroundColor="#101010" barStyle='light-content' />
+      <StatusBar hidden />
       <Router />
     </NavigationContainer>
   );

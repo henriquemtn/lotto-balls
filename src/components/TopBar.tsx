@@ -61,7 +61,7 @@ export default function TopBar() {
     } else {
       // Se for uma URL, use-a diretamente
       userImageSource = { uri: user.photoURL };
-      console.log(user.photoURL)
+      console.log(user.photoURL);
     }
   }
 
@@ -69,15 +69,27 @@ export default function TopBar() {
     <View className="flex absolute z-10 bg-[#1E1E1E] flex-row justify-between w-full py-1 px-5">
       <View className="flex flex-row gap-2 items-center">
         {user && user.photoURL ? (
-          <Image
-            source={userImageSource}
-            className="w-[55px] h-[55px] rounded-full"
-          />
+          <View>
+            <Image
+              source={userImageSource}
+              className="w-[55px] h-[55px] rounded-xl"
+            />
+            <Image
+              source={require("../../assets/profile-border.png")}
+              className="w-[56px] h-[56px] absolute"
+            />
+          </View>
         ) : (
-          <Image
-            source={require("../../assets/avatar.png")}
-            className="w-[55px] h-[55px] rounded-full"
-          />
+          <View>
+            <Image
+              source={require("../../assets/avatar.png")}
+              className="w-[55px] h-[55px] rounded-xl"
+            />
+            <Image
+              source={require("../../assets/profile-border.png")}
+              className="w-[56px] h-[56px] absolute"
+            />
+          </View>
         )}
         <View>
           <Text className="text-[#D6D6D6] text-[14px]">Welcome back,</Text>

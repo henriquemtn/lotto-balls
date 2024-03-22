@@ -1,5 +1,5 @@
 import { Text, Image, View } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Animated, { PinwheelIn, SlideInRight } from "react-native-reanimated";
 
 // Importar todas as imagens necessárias
@@ -29,17 +29,52 @@ const ballImagesCorrect: { [key: number]: any } = {
   9: require("../../assets/Balls/ball-9-correct.png"),
 };
 
-export default function Card({ number, index, rouletteNumbers }: any) {
-  const backgroundImage = ballImages[number];
-  const isCorrect = rouletteNumbers.includes(number);
-  const ballImage = isCorrect ? ballImagesCorrect[number] : backgroundImage;
+export default function Card({ number, rouletteNumbers, betNumbers }: any) {
+  const [correctNumbers, setCorrectNumbers] = useState<{ [key: number]: boolean }>({});
+
+  useEffect(() => {
+    const flatBetNumbers = betNumbers.flat();
+    const newCorrectNumbers: { [key: number]: boolean } = {};
+
+    // Verifica se o número apostado está presente nos números sorteados pela roleta
+    rouletteNumbers.forEach((rouletteNumber: number) => {
+      if (flatBetNumbers.includes(rouletteNumber)) {
+        newCorrectNumbers[rouletteNumber] = true;
+      }
+    });
+
+    setCorrectNumbers(prevCorrectNumbers => ({
+      ...prevCorrectNumbers,
+      ...newCorrectNumbers
+    }));
+  }, [number, rouletteNumbers, betNumbers]);
+
+  const isCorrect = correctNumbers[number];
+
+  console.log("Número atual:", number);
+  console.log("Números sorteados pela roleta:", rouletteNumbers);
+  console.log("Números apostados:", betNumbers);
+  console.log("Está correto?", isCorrect);
+
+  const ballImage = isCorrect ? ballImagesCorrect[number] : ballImages[number];
 
   return (
-    <Animated.View key={index} entering={SlideInRight.delay(500).duration(500)}>
-      <Animated.View key={index} entering={PinwheelIn.delay(500).duration(1000)}>
+    <Animated.View
+      key={rouletteNumbers}
+      entering={SlideInRight.delay(0).duration(400)}
+    >
+      <Animated.View
+        key={rouletteNumbers}
+        entering={PinwheelIn.delay(0).duration(1000)}
+      >
         <Image
           source={ballImage}
-          style={{ width: 72, height: 72, marginHorizontal: 2 }}
+          style={{
+            width: 70,
+            height: 70,
+            marginHorizontal: 2,
+            marginBottom: 4,
+          }}
         />
       </Animated.View>
     </Animated.View>

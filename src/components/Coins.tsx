@@ -1,8 +1,7 @@
-import { Text, TouchableOpacity, Image } from "react-native";
+import { Text, TouchableOpacity, Image, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
-
 
 export default function Coins() {
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
@@ -50,15 +49,21 @@ export default function Coins() {
   }, []);
 
   return (
-    <TouchableOpacity className="bg-[#101010] flex-row p-1 rounded-full justify-center items-center">
-      <Image
-        source={require("../../assets/gold-bar.png")}
-        className="w-[28px] h-[19px]"
-      />
-      <Text className="ml-4 text-base text-white font-medium">{moedas}</Text>
-      <TouchableOpacity className="ml-2 w-6 h-6 rounded-full">
-        <Image source={require("../../assets/plus.png")} />
+    <View className="bg-[#261B16] flex-row rounded-xl px-2 justify-between items-center">
+      <View className="flex-row items-center ">
+        <Image
+          source={require("../../assets/coin.png")}
+          className="w-[21px] h-[16px]"
+        />
+        <Text className="ml-2 text-[9px] text-white font-medium">${moedas}</Text>
+      </View>
+
+      <TouchableOpacity className="pl-5 ">
+        <Image
+          source={require("../../assets/buy-coins.png")}
+          className="w-4 h-4"
+        />
       </TouchableOpacity>
-    </TouchableOpacity>
+    </View>
   );
 }
