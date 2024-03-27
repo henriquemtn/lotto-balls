@@ -6,7 +6,7 @@ interface NumberCount {
 }
 
 export const placeBet = async (
-  user: FirebaseAuthTypes.User| null,
+  user: FirebaseAuthTypes.User | null,
   selectedNumbers: number[],
   betAmount: number,
   rouletteNumbers: number[]
@@ -35,21 +35,27 @@ export const placeBet = async (
 
     const novoSaldo = moedasAntigas - betAmount;
 
-    // Contagem da frequência de cada número nos conjuntos de números gerados pela roleta e nos números escolhidos pelo usuário
-    const rouletteNumbersCount = countNumbersFrequency(rouletteNumbers);
-    const selectedNumbersCount = countNumbersFrequency(selectedNumbers);
-
     // Calcular a quantidade de acertos
     let acertos = 0;
-    for (const number in selectedNumbersCount) {
-      if (number === '10') {
-        // Se o número sorteado for 10, considera-se automaticamente um acerto
-        acertos += 1;
-      } else if (rouletteNumbersCount[number]) {
-        // Caso contrário, verifica-se se o número selecionado coincide com algum número sorteado
-        acertos += Math.min(rouletteNumbersCount[number], selectedNumbersCount[number]);
+    selectedNumbers.forEach((number, index) => {
+      if (
+        number === 10 ||
+        (number === rouletteNumbers[index] && number !== 10)
+      ) {
+        acertos++;
       }
-    }
+    });
+
+    // Contabilizar o número de vezes que o número 10 aparece na roleta
+    const numberTenCount = rouletteNumbers.filter(
+      (number) => number === 10
+    ).length;
+
+    // Adicionar o número de acertos adicionais com base no número de vezes que o número 10 aparece na roleta
+    acertos += numberTenCount;
+
+    console.log(acertos);
+
     // Calcular o prêmio com base na quantidade de acertos
     let premio = 0;
     switch (acertos) {
@@ -83,10 +89,18 @@ export const placeBet = async (
       coins: novoSaldo + premio,
     });
 
+    const numerosExatosAcertados: number[] = [];
+    selectedNumbers.forEach((number) => {
+      if (rouletteNumbers.includes(number)) {
+        numerosExatosAcertados.push(number);
+      }
+    });
+
     return {
       numerosGerados: rouletteNumbers,
       acertos,
       premio,
+      numerosExatosAcertados,
     };
   } catch (error) {
     throw error;

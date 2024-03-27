@@ -44,8 +44,10 @@ export default function Game() {
     { isActive: true, selectedNumbers: Array(6).fill(0) },
   ]);
 
+  const activeCards = cards.filter((card) => card.isActive);
+
   const toggleCardActivation = (index: number) => {
-    setCards(prevCards => {
+    setCards((prevCards) => {
       const updatedCards = [...prevCards];
       if (updatedCards[index].isActive) {
         // Se o cartão estiver ativo, desative-o e remova a matriz
@@ -59,12 +61,11 @@ export default function Game() {
       return updatedCards;
     });
   };
-  
 
   const generateRandomNumbers = () => {
     if (isPlaying) {
       const numbers = Array.from({ length: 6 }, () =>
-        Math.floor(Math.random() * 10)
+        Math.floor(Math.random() * 11)
       );
       setRouletteNumbers(numbers);
       handlePlaceBet(numbers);
@@ -117,14 +118,16 @@ export default function Game() {
 
       await Promise.all(
         activeCards.map(async (card, index) => {
+
+          // Realiza a aposta e obtém o resultado
           const betResult = await placeBet(
             user,
             card.selectedNumbers,
             betAmount,
             currentRouletteNumbers
           );
-          setResult(betResult);
 
+          // Verifica se o resultado da aposta está disponível
           if (betResult) {
             console.log(
               `Aposta no cartão ${index + 1}:`,
@@ -143,7 +146,7 @@ export default function Game() {
             console.log(
               `Aposta no cartão ${index + 1}:`,
               "Acertos:",
-              betResult.acertos
+              betResult.acertos // Usando a contagem local de acertos, não a do resultado da aposta
             );
             console.log(
               `Aposta no cartão ${index + 1}:`,
@@ -168,9 +171,12 @@ export default function Game() {
   };
 
   useEffect(() => {
-    const updatedSelectedNumbersList = cards.map(
-      (card) => card.selectedNumbers
-    );
+    const updatedSelectedNumbersList: number[][] = [[]]; // Inicialize como um array bidimensional contendo um array vazio
+    cards.forEach((card) => {
+      if (card.isActive) {
+        updatedSelectedNumbersList[0].push(...card.selectedNumbers);
+      }
+    });
     setSelectedNumbersList(updatedSelectedNumbersList);
   }, [cards]);
 
@@ -219,7 +225,7 @@ export default function Game() {
         {/* Roleta */}
         <Roulette
           rouletteNumbers={rouletteNumbers}
-          selectedNumbersList={selectedNumbersList}
+          cardNumber={selectedNumbersList}
         />
 
         <View className="flex-row w-full h-[75%] pt-[1px]">
@@ -611,7 +617,7 @@ export default function Game() {
                           TOTAL BET:
                         </Text>
                         <Text className="text-[#187A0D] text-[12px] font-bold ml-[1px]">
-                          $ 4
+                          $ {betAmount * activeCards.length}
                         </Text>
                       </View>
                     </View>
