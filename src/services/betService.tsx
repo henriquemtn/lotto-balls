@@ -66,19 +66,19 @@ export const placeBet = async (
         premio = 0;
         break;
       case 2:
-        premio = betAmount * 1;
+        premio = betAmount * 1; // acertou any 2 ganhou 1x
         break;
       case 3:
-        premio = betAmount * 6;
+        premio = betAmount * 6;  // acertou any 3 ganhou 6x
         break;
       case 4:
-        premio = betAmount * 30;
+        premio = betAmount * 30; // acertou any 4 ganhou 30x
         break;
       case 5:
-        premio = betAmount * 200;
+        premio = betAmount * 200; // acertou any 5 ganhou 200x
         break;
       case 6:
-        premio = betAmount * 200;
+        premio = betAmount * 5000; // acertou any 6 ganhou 5000x
         break;
       default:
         premio = 0;
@@ -105,16 +105,4 @@ export const placeBet = async (
   } catch (error) {
     throw error;
   }
-};
-
-// Função para contar a frequência de cada número em um conjunto de números
-const countNumbersFrequency = (numbers: number[] | undefined): NumberCount => {
-  const count: NumberCount = {};
-  if (!numbers) {
-    return count;
-  }
-  numbers.forEach((number: number) => {
-    count[number] = (count[number] || 0) + 1;
-  });
-  return count;
 };

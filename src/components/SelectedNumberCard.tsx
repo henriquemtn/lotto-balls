@@ -28,14 +28,21 @@ const cardImagesCorrect: { [key: number]: any } = {
   9: require("../../assets/Plaques/Plaque-9-correct.png"),
 };
 
-export default function SelectedNumberCard({ number, onPress, isCorrect }: any) {
-  const backgroundImage = isCorrect ? cardImagesCorrect[number] : cardImages[number];
+export default function SelectedNumberCard({ number, onPress, isCorrect, isClicked }: any) {
+
+  const backgroundImage = isClicked
+  ? cardImages[number]
+  : isCorrect
+  ? cardImagesCorrect[number]
+  : cardImages[number];
+
+
 
   const incrementNumber = () => {
-    const newNumber = (number + 1) % 10; // Incrementa o número atual e faz o módulo 10
-    onPress(newNumber); // Chama a função onPress passando o novo número como argumento
+      const newNumber = (number + 1) % 10; // Incrementa o número atual e faz o módulo 10
+      onPress(newNumber, false);// Chama a função onPress passando o novo número como argumento
   };
-  
+
   return (
     <View className="flex-col w-1/6 items-center max-h-[75%] px-[1px]">
       <Image

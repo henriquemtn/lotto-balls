@@ -15,6 +15,7 @@ import { StackTypes } from "../routes/router";
 
 import { FontAwesome } from "@expo/vector-icons";
 import Button from "../components/Button";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function SignIn() {
   const navigation = useNavigation<StackTypes>();
@@ -51,16 +52,19 @@ export default function SignIn() {
       .catch((error) => alert(error));
   }
   return (
-    <View className="flex-1 bg-[#151515] px-6">
+    <LinearGradient
+      colors={["#281411", "#090606"]}
+      className="flex-row h-full bg-[#151515] px-6 justify-center"
+    >
       <StatusBar barStyle="light-content" />
 
-      <View className="w-1/2 py-2">
+      <View className="w-1/2 h-full justify-center py-2">
         <Text className="text-white text-xl">Login in to your account</Text>
         <Text className="text-[#5A626A]">
           Welcome back! Please enter your details!
         </Text>
 
-        <View className="flex flex-row items-center px-4 w-full h-10 bg-[#151515] my-4 border border-[#D2D2D2]">
+        <View className="flex flex-row items-center px-4 w-full h-10  my-4  rounded-md border-2 border-[#D2D2D2]">
           <FontAwesome name="envelope-o" size={24} color="white" />
           <TextInput
             className="text-white ml-4"
@@ -70,7 +74,7 @@ export default function SignIn() {
           />
         </View>
 
-        <View className="flex flex-row items-center px-4 w-full h-10 bg-[#151515] mb-4 border border-[#D2D2D2]">
+        <View className="flex flex-row items-center px-4 w-full h-10 mb-4 rounded-md border-2 border-[#D2D2D2]">
           <FontAwesome name="lock" size={24} color="white" />
           <TextInput
             className="text-white ml-4"
@@ -81,21 +85,40 @@ export default function SignIn() {
           />
         </View>
 
-        <Button blue title="Sign In" onPress={handleSignIn} />
-        <TouchableOpacity onPress={onGoogleButtonPress}   className="flex-row justify-center mb-[7px] items-center w-full h-12 p-[10px] bg-[#] border-[1px] border-white">
-          <Image source={require('../../assets/googleIcon.png')}/>
-          <Text className="text-white ml-2">Continue with Google</Text>
+        <TouchableOpacity
+          onPress={handleSignIn}
+          className="flex-row justify-center mb-[7px] rounded-md items-center w-full h-12"
+        >
+          <Image
+            source={require("../../assets/SignInButton.png")}
+            className="w-full h-full rounded-md"
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={onGoogleButtonPress}
+          className="flex-row justify-center mb-[7px] rounded-md items-center w-full h-12"
+        >
+          <Image
+            source={require("../../assets/GoogleButton.png")}
+            className="w-full h-full rounded-md"
+          />
         </TouchableOpacity>
 
         <View className="flex w-full justify-center flex-row mt-2">
-          <Text className="text-white text-[13px]">
-            Don't have an account?
-          </Text>
+          <Text className="text-white text-[13px]">Don't have an account?</Text>
           <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
-            <Text className="text-[#0066FF] text-[13px] ml-1">Sign Up</Text>
+            <Text className="text-[#C88D1B] text-[13px] ml-1">Sign Up</Text>
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+
+      <View className="w-1/2 h-full justify-center items-center pt-10">
+        <Image
+          source={require("../../assets/Cassino.png")}
+          className="w-full h-full rounded-md"
+        />
+      </View>
+    </LinearGradient>
   );
 }

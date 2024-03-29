@@ -8,6 +8,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { uploadImage } from "../services/uploadImage";
 import { useNavigation } from "@react-navigation/native";
 import { StackTypes } from "../routes/router";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Profile() {
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
@@ -64,7 +65,7 @@ export default function Profile() {
   };
 
   return (
-    <View className="bg-[#0E0F11] h-full w-full">
+    <LinearGradient colors={["#281411", "#090606"]} className="bg-[#0E0F11] h-full w-full">
       <TopBar />
 
       <View className="w-full justify-center items-center mt-[70px]">
@@ -104,6 +105,6 @@ export default function Profile() {
       </View>
 
       <View className="bg-[#2D2423] w-full h-[1px] my-4" />
-    </View>
+    </LinearGradient>
   );
 }

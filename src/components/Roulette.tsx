@@ -1,12 +1,6 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  ImageBackground,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, Image, ImageBackground } from "react-native";
 import React, { useState, useEffect } from "react";
+import Animated, { PinwheelIn, SlideInRight } from "react-native-reanimated";
 
 const ballImages: { [key: number]: any } = {
   0: require("../../assets/Balls/ball-0.png"),
@@ -20,6 +14,7 @@ const ballImages: { [key: number]: any } = {
   8: require("../../assets/Balls/ball-8.png"),
   9: require("../../assets/Balls/ball-9.png"),
   10: require("../../assets/Balls/goldenbar-placeholder.png"),
+  11: require("../../assets/Balls/ball-0.png"),
 };
 
 const ballImagesCorrect: { [key: number]: any } = {
@@ -32,15 +27,14 @@ const ballImagesCorrect: { [key: number]: any } = {
   6: require("../../assets/Balls/ball-6-correct.png"),
   7: require("../../assets/Balls/ball-7-correct.png"),
   8: require("../../assets/Balls/ball-8-correct.png"),
+  9: require("../../assets/Balls/ball-9-correct.png"),
   10: require("../../assets/Balls/goldenbar-placeholder.png"),
 };
 
-export default function Roulette({ cardNumber, rouletteNumbers }: any) {
+export default function Roulette({ cardNumber, rouletteNumbers, isClicked }: any) {
   const [bets, setBets] = useState<number[]>([0, 0, 0, 0, 0, 0]);
-  const [nums, setNums] = useState<number[]>([10, 10, 10, 10, 10, 10]);
+  const [nums, setNums] = useState<number[]>([11, 11, 11, 11, 11, 11]);
   const initialBets = [...bets];
-
-  console.log("nums:", nums)
 
   useEffect(() => {
     if (cardNumber && cardNumber.length > 0) {
@@ -52,48 +46,78 @@ export default function Roulette({ cardNumber, rouletteNumbers }: any) {
     if (rouletteNumbers && rouletteNumbers.length > 0) {
       setNums(rouletteNumbers);
     } else {
-      setNums([10, 10, 10, 10, 10, 10]);
+      setNums([11, 11, 11, 11, 11, 11]);
     }
-  }, [rouletteNumbers]);  
+  }, [rouletteNumbers]);
 
+  const groupedBets: number[][] = [];
+  for (let i = 0; i < initialBets.length; i += 6) {
+    const subArray = initialBets.slice(i, i + 6);
+    groupedBets.push(subArray);
+  }
+  
   return (
     <ImageBackground
       source={require("../../assets/roulette.png")}
-      className="w-full justify-center items-center relative rounded-md"
+      className="h-[80px] flex w-full justify-center items-center relative rounded-md"
+      resizeMode="stretch"
     >
-      <View style={styles.row}>
-        {nums && nums.map((num: number, index: number) => { // Verifica se nums é definido antes de chamar map
-          const matchIndex = bets[index] === num ? index : -1;
-          if (matchIndex !== -1) {
-            initialBets[matchIndex] = -1; // Marca o número da aposta como corrigido na cópia
-            return (
-              <Image
-                key={index}
-                source={ballImagesCorrect[num]}
-                style={{
-                  width: 70,
-                  height: 70,
-                  marginHorizontal: 2,
-                  marginBottom: 4,
-                }}
-              />
-            );
-          } else {
-            return (
-              <Image
-                key={index}
-                source={ballImages[num]}
-                style={{
-                  width: 70,
-                  height: 70,
-                  marginHorizontal: 2,
-                  marginBottom: 4,
-                }}
-              />
-            );
-          }
-        })}
-      </View>
+      <Animated.View
+        key={rouletteNumbers}
+        style={styles.row}
+        className="justify-center items-center"
+        entering={SlideInRight.delay(200).duration(500)}
+      >
+          {nums &&
+          nums.map((num: number, index: number) => {
+            let matchIndex = -1;
+            // Verificar cada subarray de groupedBets para encontrar uma correspondência
+            groupedBets.forEach((subArray, arrayIndex) => {
+              if (subArray[index] === num) {
+                // Calcular o índice correspondente com base no índice atual e no índice da submatriz
+                matchIndex = (arrayIndex * 6) + index;
+              }
+            });
+
+            if (!isClicked && matchIndex !== -1) {
+              return (
+                <Animated.View
+                  key={index}
+                  entering={PinwheelIn.delay(200).duration(1000)}
+                >
+                  <Image
+                    key={index}
+                    source={ballImagesCorrect[num]}
+                    style={{
+                      width: 68,
+                      height: 68,
+                      marginHorizontal: 2,
+                      marginTop: 3,
+                    }}
+                  />
+                </Animated.View>
+              );
+            } else {
+              return (
+                <Animated.View
+                  key={index}
+                  entering={PinwheelIn.delay(200).duration(1000)}
+                >
+                  <Image
+                    key={index}
+                    source={ballImages[num]}
+                    style={{
+                      width: 68,
+                      height: 68,
+                      marginHorizontal: 2,
+                      marginTop: 3,
+                    }}
+                  />
+                </Animated.View>
+              );
+            }
+          })}
+      </Animated.View>
     </ImageBackground>
   );
 }
@@ -102,6 +126,6 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 0,
   },
 });
