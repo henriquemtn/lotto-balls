@@ -1,32 +1,95 @@
-import { View, Text, Image, TouchableOpacity } from "react-native";
-import React from "react";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ImageBackground,
+} from "react-native";
+import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { StackTypes } from "../routes/router";
 import { LinearGradient } from "expo-linear-gradient";
+import * as Font from "expo-font";
 
 export default function Welcome() {
-    const navigation = useNavigation<StackTypes>();
+  const navigation = useNavigation<StackTypes>();
+  const [fontLoaded, setFontLoaded] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [loadingComplete, setLoadingComplete] = useState(false);
+
+  useEffect(() => {
+    function updatedProgress() {
+      setProgress((currentProgress) => {
+        if (currentProgress < 1) {
+          setTimeout(updatedProgress, 0);
+        } else {
+          setLoadingComplete(true);
+        }
+        return currentProgress + 0.01;
+      });
+    }
+    updatedProgress();
+  }, []);
+  useEffect(() => {
+    async function loadFont() {
+      await Font.loadAsync({
+        MADEKenfolg: require("../../assets/fonts/MADEKenfolg.otf"),
+      });
+      setFontLoaded(true);
+    }
+
+    loadFont();
+  }, []);
 
   return (
-    <LinearGradient colors={["#281411", "#090606"]} className="flex-row justify-between h-full w-full">
-      <View className="w-1/2 justify-between h-2/4  p-4">
-        <Image 
-        className=""
-        source={require('../../assets/welcome.png')}
+    <LinearGradient
+      colors={["#281411", "#090606"]}
+      className="flex-row justify-between h-full w-full"
+    >
+      <View className="w-full items-center justify-between h-3/4 p-4">
+        <Image
+          className="w-full h-full"
+          resizeMode="contain"
+          source={require("../../assets/goldenlotto.png")}
         />
-      </View>
 
-      <View className="bg-[#090606] w-1/2 h-full p-4">
-        <Text className="text-white font-semibold text-[32px] pt-4">
-          Get ready to experience the thrill of the lottery like never before.
-        </Text>
-        <Text className="text-[#606060] pt-2">
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-        </Text>
-
-        <TouchableOpacity onPress={() => navigation.navigate('SignIn')} className="w-full mt-12 bg-[#FAB300] p-4 rounded-full items-center">
-            <Text className="font-medium text-white text-xl">Get Started</Text>
+        {loadingComplete ? ( // Verifica se o carregamento está completo
+          <TouchableOpacity
+            onPress={() => navigation.navigate("SignIn")}
+            className="w-1/2 mt-12  p-3 rounded-full items-center"
+          >
+            <Text
+              style={{
+                fontFamily: "MADEKenfolg",
+                fontSize: 20,
+                color: "white",
+              }}
+            >
+              Continue
+            </Text>
           </TouchableOpacity>
+        ) : (
+          <View className="w-[40%] items-center h-1/2 pt-4 z-20">
+            <Image
+              resizeMode="stretch"
+              className="w-full h-[30] mt-[14px] absolute z-40"
+              source={require("../../assets/loading-bar.png")}
+            />
+            <View className="w-full justify-center">
+              <View className="mx-0.4" style={{ width: "98%", height: 28 }}>
+                <ImageBackground
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    width: `${progress * 100}%`,
+                  }}
+                  source={require("../../assets/loading-bar-progress.png")}
+                  resizeMode="stretch"
+                ></ImageBackground>
+              </View>
+            </View>
+          </View>
+        )}
       </View>
     </LinearGradient>
   );

@@ -7,11 +7,12 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import auth from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useNavigation } from "@react-navigation/native";
 import { StackTypes } from "../routes/router";
+import * as Font from "expo-font";
 
 import { FontAwesome } from "@expo/vector-icons";
 import Button from "../components/Button";
@@ -21,6 +22,18 @@ export default function SignIn() {
   const navigation = useNavigation<StackTypes>();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fontLoaded, setFontLoaded] = useState(false);
+
+  useEffect(() => {
+    async function loadFont() {
+      await Font.loadAsync({
+        MADEKenfolg: require("../../assets/fonts/MADEKenfolg.otf"),
+      });
+      setFontLoaded(true);
+    }
+
+    loadFont();
+  }, []);
 
   GoogleSignin.configure({
     webClientId:
@@ -59,15 +72,15 @@ export default function SignIn() {
       <StatusBar barStyle="light-content" />
 
       <View className="w-1/2 h-full justify-center py-2">
-        <Text className="text-white text-xl">Login in to your account</Text>
-        <Text className="text-[#5A626A]">
+        <Text className="text-white text-xl font-[MADEKenfolg]">Login in to your account</Text>
+        <Text className="text-[#5A626A] font-[MADEKenfolg]">
           Welcome back! Please enter your details!
         </Text>
 
-        <View className="flex flex-row items-center px-4 w-full h-10  my-4  rounded-md border-2 border-[#D2D2D2]">
+        <View className="flex flex-row items-center px-4 w-full h-10  my-4 rounded-md border-2 border-[#D2D2D2]">
           <FontAwesome name="envelope-o" size={24} color="white" />
           <TextInput
-            className="text-white ml-4"
+            className="text-white ml-4 font-[MADEKenfolg] w-full"
             placeholderTextColor="#D2D2D2"
             placeholder="Enter your email"
             onChangeText={(text) => setEmail(text)}
@@ -77,7 +90,7 @@ export default function SignIn() {
         <View className="flex flex-row items-center px-4 w-full h-10 mb-4 rounded-md border-2 border-[#D2D2D2]">
           <FontAwesome name="lock" size={24} color="white" />
           <TextInput
-            className="text-white ml-4"
+            className="text-white ml-4 font-[MADEKenfolg]"
             placeholderTextColor="#D2D2D2"
             placeholder="Enter your password"
             secureTextEntry
@@ -106,9 +119,9 @@ export default function SignIn() {
         </TouchableOpacity>
 
         <View className="flex w-full justify-center flex-row mt-2">
-          <Text className="text-white text-[13px]">Don't have an account?</Text>
+          <Text className="text-white text-[13px] font-[MADEKenfolg]">Don't have an account?</Text>
           <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
-            <Text className="text-[#C88D1B] text-[13px] ml-1">Sign Up</Text>
+            <Text className="text-[#C88D1B] text-[13px] ml-1 font-[MADEKenfolg]">Sign Up</Text>
           </TouchableOpacity>
         </View>
       </View>

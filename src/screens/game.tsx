@@ -15,11 +15,11 @@ import Coins from "../components/Coins";
 import { useNavigation } from "@react-navigation/native";
 import { StackTypes } from "../routes/router";
 import Animated, {
-  SlideInDown,
   ZoomIn,
   ZoomOut,
 } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
+import * as Font from "expo-font";
 
 type BetResult = {
   numerosGerados: any;
@@ -115,7 +115,6 @@ export default function Game() {
   useEffect(() => {
     if (isPlaying) {
       setIsClicked(false)
-      generateRandomNumbers();
     }
   }, [isPlaying]);
 
@@ -308,7 +307,7 @@ export default function Game() {
   };
 
   return (
-    <LinearGradient colors={["#281411", "#090606"]} className="flex-row  justify-center w-full h-full">
+    <LinearGradient colors={["#281411", "#090606"]} className="flex-row justify-center w-full h-full">
       {showMegaWin && maiorNumeroDeAcertos === 5 && (
         <TouchableOpacity
           className="z-20 absolute w-full h-full items-center justify-center bg-black/50"
@@ -554,15 +553,15 @@ export default function Game() {
                   key={index}
                   className="rounded-md flex-row justify-between items-center px-5"
                 >
-                  <Text className="text-[#606060] text-[9px]">
+                  <Text className="text-[#606060] text-[9px] font-[MADEKenfolg]">
                     {result.acertos} Numbers
                   </Text>
                   {result.premio === 0 ? (
-                    <Text className="text-[#606060] text-[9px]">
+                    <Text className="text-[#606060] text-[9px] font-[MADEKenfolg]">
                       You lost {result.premio}
                     </Text>
                   ) : (
-                    <Text className="text-[#FAB300] text-[9px]">
+                    <Text className="text-[#FAB300] text-[9px] font-[MADEKenfolg]">
                       You won {result.premio}
                     </Text>
                   )}
@@ -576,7 +575,7 @@ export default function Game() {
             className="h-[18px] w-full mt-1"
           >
             <View className="w-full h-full items-end justify-center px-2">
-              <Text className="text-white text-[12px]">$1.938,544,00</Text>
+              <Text className="text-white text-[12px] font-[MADEKenfolg]">$1.938,544,00</Text>
             </View>
           </ImageBackground>
 
@@ -613,9 +612,9 @@ export default function Game() {
                       }
                       className="w-3 h-3"
                     />
-                    <Text className="text-[7px] text-[#DE9E26]">6</Text>
+                    <Text className="text-[7px] text-[#DE9E26] font-[MADEKenfolg]">6</Text>
                   </View>
-                  <Text className="text-[7px] text-white mr-1">2000</Text>
+                  <Text className="text-[7px] text-white mr-1 font-[MADEKenfolg]">2000</Text>
                 </View>
               </ImageBackground>
               <ImageBackground
@@ -642,9 +641,9 @@ export default function Game() {
                       }
                       className="w-3 h-3"
                     />
-                    <Text className="text-[7px] text-[#DE9E26]">5</Text>
+                    <Text className="text-[7px] text-[#DE9E26] font-[MADEKenfolg]">5</Text>
                   </View>
-                  <Text className="text-[7px] text-white mr-1">500</Text>
+                  <Text className="text-[7px] text-white mr-1 font-[MADEKenfolg]">500</Text>
                 </View>
               </ImageBackground>
               <ImageBackground
@@ -668,9 +667,9 @@ export default function Game() {
                       }
                       className="w-3 h-3"
                     />
-                    <Text className="text-[7px] text-[#DE9E26]">4</Text>
+                    <Text className="text-[7px] text-[#DE9E26] font-[MADEKenfolg]">4</Text>
                   </View>
-                  <Text className="text-[7px] text-white mr-1">200</Text>
+                  <Text className="text-[7px] text-white mr-1 font-[MADEKenfolg]">200</Text>
                 </View>
               </ImageBackground>
               <ImageBackground
@@ -711,9 +710,9 @@ export default function Game() {
                       }
                       className="w-3 h-3"
                     />
-                    <Text className="text-[7px] text-[#DE9E26]">2</Text>
+                    <Text className="text-[7px] text-[#DE9E26] font-[MADEKenfolg]">2</Text>
                   </View>
-                  <Text className="text-[7px] text-white mr-1">8</Text>
+                  <Text className="text-[7px] text-white mr-1 font-[MADEKenfolg]">8</Text>
                 </View>
               </ImageBackground>
               <ImageBackground
@@ -733,9 +732,9 @@ export default function Game() {
                         className="w-3 h-3"
                       />
                     )}
-                    <Text className="text-[7px] text-[#DE9E26]">1</Text>
+                    <Text className="text-[7px] text-[#DE9E26] font-[MADEKenfolg]">1</Text>
                   </View>
-                  <Text className="text-[7px] text-white mr-1">2</Text>
+                  <Text className="text-[7px] text-white mr-1 font-[MADEKenfolg]">2</Text>
                 </View>
               </ImageBackground>
               <ImageBackground
@@ -756,9 +755,9 @@ export default function Game() {
                         className="w-3 h-3"
                       />
                     )}
-                    <Text className="text-[7px] text-[#DE9E26]">5</Text>
+                    <Text className="text-[7px] text-[#DE9E26] font-[MADEKenfolg]">5</Text>
                   </View>
-                  <Text className="text-[7px] text-white mr-1">200</Text>
+                  <Text className="text-[7px] text-white mr-1 font-[MADEKenfolg]">200</Text>
                 </View>
               </ImageBackground>
               <ImageBackground
@@ -779,9 +778,9 @@ export default function Game() {
                         className="w-3 h-3"
                       />
                     )}
-                    <Text className="text-[7px] text-[#DE9E26]">4</Text>
+                    <Text className="text-[7px] text-[#DE9E26] font-[MADEKenfolg]">4</Text>
                   </View>
-                  <Text className="text-[7px] text-white mr-1">30</Text>
+                  <Text className="text-[7px] text-white mr-1 font-[MADEKenfolg]">30</Text>
                 </View>
               </ImageBackground>
               <ImageBackground
@@ -802,9 +801,9 @@ export default function Game() {
                         className="w-3 h-3"
                       />
                     )}
-                    <Text className="text-[7px] text-[#DE9E26]">3</Text>
+                    <Text className="text-[7px] text-[#DE9E26] font-[MADEKenfolg]">3</Text>
                   </View>
-                  <Text className="text-[7px] text-white mr-1">6</Text>
+                  <Text className="text-[7px] text-white mr-1 font-[MADEKenfolg]">6</Text>
                 </View>
               </ImageBackground>
             </View>
@@ -834,9 +833,9 @@ export default function Game() {
                   >
                     <View className="flex-col justify-center px-2 ">
                       <View className="flex-row justify-between items-center ">
-                        <Text className=" text-white text-[12px]">BET: $</Text>
+                        <Text className=" text-white text-[12px] font-[MADEKenfolg]">BET: $</Text>
                         <TextInput
-                          className="text-white text-[12px] h-[20px]"
+                          className="text-white text-[12px] h-[20px] font-[MADEKenfolg]"
                           placeholderTextColor="#1C242E"
                           keyboardType="numeric"
                           placeholder="Enter bet amount..."
@@ -848,10 +847,10 @@ export default function Game() {
                       </View>
 
                       <View className="flex-row justify-center items-center">
-                        <Text className="text-white text-[9px]">
+                        <Text className="text-white text-[9px] font-[MADEKenfolg]">
                           TOTAL BET:
                         </Text>
-                        <Text className="text-[#187A0D] text-[12px] font-bold ml-[1px]">
+                        <Text className="text-[#187A0D] text-[12px] font-bold ml-[1px] font-[MADEKenfolg]">
                           $ {betAmount * activeCards.length}
                         </Text>
                       </View>

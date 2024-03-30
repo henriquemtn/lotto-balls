@@ -2,16 +2,27 @@ import { View, Text, Image, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
-import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackTypes } from "../routes/router";
 import { LinearGradient } from "expo-linear-gradient";
-import Coins from "./Coins";
+import * as Font from "expo-font";
 
 export default function TopBar() {
   const navigation = useNavigation<StackTypes>();
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
   const [moedas, setMoedas] = useState(0);
+  const [fontLoaded, setFontLoaded] = useState(false);
+
+  useEffect(() => {
+    async function loadFont() {
+      await Font.loadAsync({
+        MADEKenfolg: require("../../assets/fonts/MADEKenfolg.otf"),
+      });
+      setFontLoaded(true);
+    }
+
+    loadFont();
+  }, []);
 
   useEffect(() => {
     const unsubscribeAuth = auth().onAuthStateChanged((currentUser) => {
@@ -112,7 +123,7 @@ export default function TopBar() {
           className="w-[38px] h-[29px]"
         />
         <View className="bg-[#4f2b1f] flex-row rounded-full items-center px-4">
-          <Text className="text-base text-white font-medium">
+          <Text className="text-base text-white font-[MADEKenfolg]">
             $ 
             {moedas}
           </Text>
