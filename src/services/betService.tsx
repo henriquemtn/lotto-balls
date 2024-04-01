@@ -1,15 +1,14 @@
 import firestore from "@react-native-firebase/firestore";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
-
-interface NumberCount {
-  [key: string]: number;
-}
+import { ToastAndroid } from "react-native";
 
 export const placeBet = async (
   user: FirebaseAuthTypes.User | null,
   selectedNumbers: number[],
   betAmount: number,
-  rouletteNumbers: number[]
+  rouletteNumbers: number[],
+  cardIndex: number,
+  lost: number,
 ) => {
   try {
     if (!user) {
@@ -17,7 +16,8 @@ export const placeBet = async (
     }
 
     if (betAmount <= 0) {
-      throw new Error("Valor de aposta inválido.");
+      ToastAndroid.show('Valor de aposta inválido.', ToastAndroid.SHORT);
+
     }
 
     const userRef = firestore().collection("users").doc(user.uid);
@@ -25,82 +25,67 @@ export const placeBet = async (
     const data = doc.data();
 
     if (!data) {
+      ToastAndroid.show('Houve algum erro ao encontrar o usuário no banco de dados.', ToastAndroid.SHORT);
       throw new Error("Documento do usuário não encontrado.");
     }
 
     const moedasAntigas = data.coins || 0;
     if (moedasAntigas < betAmount) {
-      throw new Error("Saldo insuficiente.");
+      ToastAndroid.show('Saldo insuficiente.', ToastAndroid.SHORT);
     }
 
     const novoSaldo = moedasAntigas - betAmount;
 
     // Calcular a quantidade de acertos
     let acertos = 0;
-    selectedNumbers.forEach((number, index) => {
+    for (let i = 0; i < 6; i++) {
       if (
-        number === 10 ||
-        (number === rouletteNumbers[index] && number !== 10)
+        selectedNumbers[i] === rouletteNumbers[i] ||
+        rouletteNumbers[i] === 10 // Considerar o número 10 como coringa
       ) {
         acertos++;
       }
-    });
-
-    // Contabilizar o número de vezes que o número 10 aparece na roleta
-    const numberTenCount = rouletteNumbers.filter(
-      (number) => number === 10
-    ).length;
-
-    // Adicionar o número de acertos adicionais com base no número de vezes que o número 10 aparece na roleta
-    acertos += numberTenCount;
-
-    console.log(acertos);
+    }
 
     // Calcular o prêmio com base na quantidade de acertos
     let premio = 0;
     switch (acertos) {
       case 0:
-        premio = 0;
-        break;
       case 1:
         premio = 0;
         break;
       case 2:
-        premio = betAmount * 1; // acertou any 2 ganhou 1x
+        premio = betAmount * 1;
         break;
       case 3:
-        premio = betAmount * 6;  // acertou any 3 ganhou 6x
+        premio = betAmount * 6; // Ajuste o prêmio para refletir a regra
         break;
       case 4:
-        premio = betAmount * 30; // acertou any 4 ganhou 30x
+        premio = betAmount * 30; // Ajuste o prêmio para refletir a regra
         break;
       case 5:
-        premio = betAmount * 200; // acertou any 5 ganhou 200x
+        premio = betAmount * 500; // Ajuste o prêmio para refletir a regra
         break;
       case 6:
-        premio = betAmount * 5000; // acertou any 6 ganhou 5000x
+        premio = betAmount * 2000; // Ajuste o prêmio para refletir a regra
         break;
       default:
         premio = 0;
         break;
     }
 
+    const lost = betAmount - premio;
+
     await userRef.update({
       coins: novoSaldo + premio,
-    });
-
-    const numerosExatosAcertados: number[] = [];
-    selectedNumbers.forEach((number) => {
-      if (rouletteNumbers.includes(number)) {
-        numerosExatosAcertados.push(number);
-      }
     });
 
     return {
       numerosGerados: rouletteNumbers,
       acertos,
       premio,
-      numerosExatosAcertados,
+      cardIndex,
+      lost
     };
   } catch (error) {
     throw error;

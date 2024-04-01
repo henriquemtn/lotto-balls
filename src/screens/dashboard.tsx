@@ -13,11 +13,12 @@ export default function Dashboard() {
     <LinearGradient colors={["#281411", "#090606"]} className="h-full w-full">
       <TopBar />
 
-      <View className="px-5 flex-row justify-between h-full">
-        <View className="w-2/3 h-full justify-center items-center pr-10 mt-[10px] py-5">
+      <View className="px-5 flex-row h-full">
+        <View className="w-2/3 h-full justify-center items-center pr-8 mt-[10px] py-5">
           <Image
             source={require("../../assets/goldenlotto.png")}
-            className="w-[420px] h-[220px] mt-[35px]"
+            className="w-full h-2/3 mt-[35px]"
+            resizeMode="contain"
           />
           <View className="flex-row w-full justify-end items-end gap-1 mt-1">
             <TouchableOpacity
@@ -51,16 +52,16 @@ export default function Dashboard() {
         </View>
 
         <View className="w-1/3 justify-between mt-[55px] py-5">
-          <TouchableOpacity onPress={() => navigation.navigate("Shop")} className="w-full h-[120px]">
+          <TouchableOpacity onPress={() => navigation.navigate("Shop")} className="w-full h-1/2">
             <Image
               source={require("../../assets/freecoins.png")}
-              className="w-full h-full  rounded-md"
+              className="w-full h-full rounded-md"
             />
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => navigation.navigate("Game")}
-            className="mt-4 w-full h-[150px] bg-[#FAB300] rounded-md justify-center items-center"
+            className="mt-4 w-full h-1/2 bg-[#FAB300] rounded-md justify-center items-center"
           >
             <Image
               source={require("../../assets/playButton.png")}

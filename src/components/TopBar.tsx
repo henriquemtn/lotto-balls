@@ -66,18 +66,18 @@ export default function TopBar() {
     return () => unsubscribeAuth();
   }, []);
 
+  // Atualize a fonte da imagem do usuário usando a chave de estado atualizada
   let userImageSource = require("../../assets/avatar.png"); // imagem padrão
   if (user && user.photoURL) {
     if (user.photoURL.startsWith("file://")) {
       // Se for um caminho de arquivo local, carregue a imagem diretamente
-      userImageSource = { uri: user.photoURL };
+      userImageSource = { uri: user.photoURL + `?key=${user.photoURL}` };
     } else {
       // Se for uma URL, use-a diretamente
       userImageSource = { uri: user.photoURL };
       console.log(user.photoURL);
     }
   }
-
   return (
     <LinearGradient
       colors={["#261411", "#090606"]}
@@ -107,10 +107,10 @@ export default function TopBar() {
             />
           </View>
         )}
-        <View>
-          <Text className="text-[#D6D6D6] text-[14px]">Welcome,</Text>
+        <View className="flex-col justify-center">
+          <Text className="text-[#D6D6D6] text-[14px] font-[MADEKenfolg]">Welcome,</Text>
           {user && (
-            <Text className="text-white font-semibold text-base">
+            <Text className="text-white font-semibold text-[16px] ml-4  font-[MADEKenfolg]">
               {user.displayName}
             </Text>
           )}
@@ -120,34 +120,42 @@ export default function TopBar() {
       <View className="flex-row p-1 rounded-full justify-center items-center gap-1">
         <Image
           source={require("../../assets/coin.png")}
-          className="w-[38px] h-[29px]"
+          className="w-[37px] h-[28px]"
         />
-        <View className="bg-[#4f2b1f] flex-row rounded-full items-center px-4">
-          <Text className="text-base text-white font-[MADEKenfolg]">
-            $ 
-            {moedas}
+        <View className="bg-[#261B16] py-1 flex-row rounded-full items-center px-4">
+          <Text className="text-[14px] text-white font-[MADEKenfolg]">
+            ${moedas}
           </Text>
         </View>
         <TouchableOpacity className="">
-            <Image
-              source={require("../../assets/buy-coins.png")}
-              className="w-8 h-8"
-            />
-          </TouchableOpacity>
+          <Image
+            source={require("../../assets/buy-coins.png")}
+            className="w-7 h-7"
+          />
+        </TouchableOpacity>
       </View>
 
       <View className="flex-row items-center">
         <View className="flex-row gap-1">
           <TouchableOpacity onPress={() => navigation.navigate("Home")}>
-            <Image source={require("../../assets/menu.png")} className="h-8 w-8"/>
+            <Image
+              source={require("../../assets/menu.png")}
+              className="h-8 w-8"
+            />
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => navigation.navigate("Shop")}>
-          <Image source={require("../../assets/topshop.png")} className="h-8 w-8"/>
+            <Image
+              source={require("../../assets/topshop.png")}
+              className="h-8 w-8"
+            />
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
-          <Image source={require("../../assets/topconfig.png")} className="h-8 w-8"/>
+            <Image
+              source={require("../../assets/topconfig.png")}
+              className="h-8 w-8"
+            />
           </TouchableOpacity>
         </View>
       </View>

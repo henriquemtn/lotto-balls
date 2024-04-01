@@ -3,9 +3,8 @@ import React, { useEffect, useState } from "react";
 import TopBar from "../components/TopBar";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import * as ImagePicker from "expo-image-picker";
-import { ImageInfo } from "expo-image-picker/build/ImagePicker.types";
 import { FontAwesome } from "@expo/vector-icons";
-import { uploadImage } from "../services/uploadImage";
+import { StackActions } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import { StackTypes } from "../routes/router";
 import { LinearGradient } from "expo-linear-gradient";
@@ -57,6 +56,12 @@ export default function Profile() {
         if (user) {
           await auth().currentUser?.updateProfile({ photoURL: imageUrl });
           setUser({ ...user, photoURL: imageUrl });
+
+          // Resetar a navegação para a tela inicial (Home)
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "Home" }],
+          });
         }
       }
     } catch (error) {
@@ -65,7 +70,10 @@ export default function Profile() {
   };
 
   return (
-    <LinearGradient colors={["#281411", "#090606"]} className="bg-[#0E0F11] h-full w-full">
+    <LinearGradient
+      colors={["#281411", "#090606"]}
+      className="bg-[#0E0F11] h-full w-full"
+    >
       <TopBar />
 
       <View className="w-full justify-center items-center mt-[70px]">
@@ -85,7 +93,7 @@ export default function Profile() {
         </Text>
         <TouchableOpacity
           onPress={changeProfilePicture}
-          className=" bg-[#222222] flex-row justify-center items-center rounded-md p-2 mt-2"
+          className=" bg-[#261B16] flex-row justify-center items-center rounded-md p-2 mt-2"
         >
           <FontAwesome name="camera" size={16} color="white" />
           <Text className="text-white text-base ml-2">
@@ -95,12 +103,10 @@ export default function Profile() {
 
         <TouchableOpacity
           onPress={signOut}
-          className=" bg-[#222222] flex-row justify-center items-center rounded-md p-2 mt-2"
+          className=" bg-[#261B16] flex-row justify-center items-center rounded-md p-2 mt-2"
         >
           <FontAwesome name="sign-out" size={16} color="white" />
-          <Text className="text-white text-base ml-2">
-            Logout
-          </Text>
+          <Text className="text-white text-base ml-2">Logout</Text>
         </TouchableOpacity>
       </View>
 

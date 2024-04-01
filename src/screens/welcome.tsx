@@ -56,7 +56,7 @@ export default function Welcome() {
         {loadingComplete ? ( // Verifica se o carregamento está completo
           <TouchableOpacity
             onPress={() => navigation.navigate("SignIn")}
-            className="w-1/2 mt-12  p-3 rounded-full items-center"
+            className="w-1/2 mt-6  p-3 rounded-full items-center"
           >
             <Text
               style={{
@@ -65,7 +65,7 @@ export default function Welcome() {
                 color: "white",
               }}
             >
-              Continue
+              Touch the Screen to Login
             </Text>
           </TouchableOpacity>
         ) : (

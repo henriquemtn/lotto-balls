@@ -77,20 +77,20 @@ export default function SignIn() {
           Welcome back! Please enter your details!
         </Text>
 
-        <View className="flex flex-row items-center px-4 w-full h-10  my-4 rounded-md border-2 border-[#D2D2D2]">
+        <View className="flex flex-row items-center px-4 w-full  h-12  my-4 rounded-md border-2 border-[#D2D2D2]">
           <FontAwesome name="envelope-o" size={24} color="white" />
           <TextInput
-            className="text-white ml-4 font-[MADEKenfolg] w-full"
+            className="text-white pl-4 font-[MADEKenfolg] w-full"
             placeholderTextColor="#D2D2D2"
             placeholder="Enter your email"
             onChangeText={(text) => setEmail(text)}
           />
         </View>
 
-        <View className="flex flex-row items-center px-4 w-full h-10 mb-4 rounded-md border-2 border-[#D2D2D2]">
+        <View className="flex flex-row items-center px-4 w-full  h-12 mb-4 rounded-md border-2 border-[#D2D2D2]">
           <FontAwesome name="lock" size={24} color="white" />
           <TextInput
-            className="text-white ml-4 font-[MADEKenfolg]"
+            className="text-white pl-4 w-full font-[MADEKenfolg]"
             placeholderTextColor="#D2D2D2"
             placeholder="Enter your password"
             secureTextEntry

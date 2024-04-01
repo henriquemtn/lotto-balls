@@ -5,6 +5,7 @@ import {
   TextInput,
   Image,
   ImageBackground,
+  ToastAndroid,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
@@ -14,17 +15,17 @@ import { placeBet } from "../services/betService";
 import Coins from "../components/Coins";
 import { useNavigation } from "@react-navigation/native";
 import { StackTypes } from "../routes/router";
-import Animated, {
-  ZoomIn,
-  ZoomOut,
-} from "react-native-reanimated";
+import Animated, { ZoomIn, ZoomOut } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
-import * as Font from "expo-font";
+import firestore from "@react-native-firebase/firestore";
+import { Feather } from "@expo/vector-icons";
 
 type BetResult = {
   numerosGerados: any;
   acertos: number;
   premio: number;
+  lost: number;
+  cardIndex: number;
 };
 
 export default function Game() {
@@ -34,14 +35,56 @@ export default function Game() {
 
   const navigation = useNavigation<StackTypes>();
   const [rouletteNumbers, setRouletteNumbers] = useState<number[]>([]);
-  const [betResults, setBetResults] = useState<
-    { numerosGerados: any; acertos: number; premio: number }[]
-  >([]);
+  const [betResults, setBetResults] = useState<BetResult[]>([]);
   const [selectedNumbersList, setSelectedNumbersList] = useState<number[][]>(
     []
   );
 
+  console.log(selectedNumbersList);
+
   const [isPlaying, setIsPlaying] = useState(false);
+  const [moedas, setMoedas] = useState(0);
+
+  useEffect(() => {
+    const unsubscribeAuth = auth().onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        const unsubscribeFirestore = firestore()
+          .collection("users")
+          .doc(currentUser.uid)
+          .onSnapshot((doc) => {
+            const userData = doc.data();
+            if (userData && userData.coins) {
+              setMoedas(userData.coins);
+            }
+          });
+
+        // Verifica se o documento do usuário existe. Se não existir, cria-o.
+        const userRef = firestore().collection("users").doc(currentUser.uid);
+        userRef.get().then((docSnapshot) => {
+          if (!docSnapshot.exists) {
+            userRef
+              .set({
+                displayName: currentUser.displayName,
+                email: currentUser.email,
+                photoURL: currentUser.photoURL,
+                coins: 0,
+              })
+              .then(() => {
+                console.log("Documento do usuário criado com sucesso.");
+              })
+              .catch((error) => {
+                console.error("Erro ao criar documento do usuário:", error);
+              });
+          }
+        });
+
+        return () => unsubscribeFirestore();
+      }
+    });
+
+    return () => unsubscribeAuth();
+  }, []);
 
   const [cards, setCards] = useState([
     { isActive: true, selectedNumbers: Array(6).fill(0) },
@@ -114,7 +157,7 @@ export default function Game() {
 
   useEffect(() => {
     if (isPlaying) {
-      setIsClicked(false)
+      setIsClicked(false);
     }
   }, [isPlaying]);
 
@@ -126,7 +169,7 @@ export default function Game() {
     const updatedCards = [...cards];
     updatedCards[cardIndex].selectedNumbers[numberIndex] = newNumber;
     setCards(updatedCards);
-    setIsClicked(true)
+    setIsClicked(true);
   };
 
   const handlePlaceBet = async (currentRouletteNumbers: any) => {
@@ -142,36 +185,44 @@ export default function Game() {
         return;
       }
 
-      await Promise.all(
-        activeCards.map(async (card, index) => {
-          // Realiza a aposta e obtém o resultado
-          const betResult = await placeBet(
-            user,
-            card.selectedNumbers,
-            betAmount,
-            currentRouletteNumbers
-          );
+      const newBetResults: BetResult[] = [];
 
-          // Verifica se o resultado da aposta está disponível
-          if (betResult) {
-            setBetResults((prevResults) => {
-              if (prevResults.length >= 3) {
-                return [...prevResults.slice(1), betResult];
-              }
-              return [...prevResults, betResult];
-            });
-          } else {
-            console.log("Aguardando resultado da roleta...");
-          }
-        })
-      );
+      for (let index = 0; index < activeCards.length; index++) {
+        const card = activeCards[index];
+        // Realiza a aposta e obtém o resultado
+        const betResult = await placeBet(
+          user,
+          card.selectedNumbers,
+          betAmount,
+          currentRouletteNumbers,
+          index,
+          betAmount
+        );
+
+        // Verifica se o resultado da aposta está disponível
+        if (betResult) {
+          // Calcula a quantidade perdida antes de adicionar ao resultado da aposta
+          const lost = betAmount - betResult.premio;
+          betResult.cardIndex = index + 1;
+          betResult.lost = lost;
+          newBetResults.push(betResult);
+        } else {
+          console.log("Aguardando resultado da roleta...");
+        }
+      }
+
+      // Adiciona os novos resultados de aposta ao estado betResults
+      setBetResults((prevResults) => {
+        const combinedResults = [...prevResults, ...newBetResults];
+        // Limita o número de resultados de aposta a 4, se necessário
+        return combinedResults.slice(-4);
+      });
     } catch (error) {
       console.error("Erro ao realizar aposta:", error);
     }
   };
 
   const isNumberCorrect = (numberIndex: number, number: number) => {
-    
     // Verifique se há resultados de aposta
     if (betResults.length > 0) {
       // Obtenha os números corretos do último resultado de aposta
@@ -182,8 +233,7 @@ export default function Game() {
         correctNumbers[numberIndex] === 10
       ) {
         return true;
-      } 
-      else {
+      } else {
         return correctNumbers[numberIndex] === number;
       }
     }
@@ -221,27 +271,36 @@ export default function Game() {
   };
 
   const handleMinusOne = () => {
-    setBetAmount(betAmount - 1);
-    onChangeBetAmount(betAmount - 1);
+    if (betAmount > 0) {
+      setBetAmount(betAmount - 1);
+      onChangeBetAmount(betAmount - 1);
+    }
   };
-
   const [buttonDisabled, setButtonDisabled] = useState(false);
 
   const handleTogglePlaying = () => {
-    if (!buttonDisabled) {
+    if (
+      !buttonDisabled &&
+      betAmount >= 1 &&
+      betAmount <= moedas &&
+      cards.some((card) => card.isActive)
+    ) {
       console.log("Clicado no botão 'Play'");
       setIsPlaying(true); // Define isPlaying como true imediatamente após o clique
       setButtonDisabled(true); // Desabilita o botão imediatamente após o clique
-  
+
       // Desabilita o botão após 3 segundos
       setTimeout(() => {
         setIsPlaying(false); // Define isPlaying como false após 3 segundos
         setButtonDisabled(false); // Habilita o botão após 3 segundos
-      }, 3000);
+      }, 2000);
+    } else if (betAmount > moedas) {
+      ToastAndroid.show(
+        "Saldo insuficiente para fazer a aposta!",
+        ToastAndroid.SHORT
+      );
     }
   };
-  
-  
 
   useEffect(() => {
     if (isPlaying) {
@@ -249,8 +308,6 @@ export default function Game() {
       generateRandomNumbers();
     }
   }, [isPlaying]);
-
-  
 
   let userImageSource = require("../../assets/avatar.png"); // imagem padrão
   if (user && user.photoURL) {
@@ -307,7 +364,10 @@ export default function Game() {
   };
 
   return (
-    <LinearGradient colors={["#281411", "#090606"]} className="flex-row justify-center w-full h-full">
+    <LinearGradient
+      colors={["#281411", "#090606"]}
+      className="flex-row justify-center w-full h-full"
+    >
       {showMegaWin && maiorNumeroDeAcertos === 5 && (
         <TouchableOpacity
           className="z-20 absolute w-full h-full items-center justify-center bg-black/50"
@@ -363,21 +423,22 @@ export default function Game() {
             {cards.slice(0, 2).map((card, index) => (
               <View key={index} className="w-full h-[52%] relative">
                 <ImageBackground
-                   source={
-                    isClicked
-                      ? require("../../assets/card.png")
-                      : card.isActive &&
-                        card.selectedNumbers.some((number, numberIndex) =>
-                          isNumberCorrect(numberIndex, number)
-                        )
-                      ? require("../../assets/card-win.png")
-                      : require("../../assets/card.png")
+                  source={
+                    card.isActive
+                      ? isClicked
+                        ? require("../../assets/card.png")
+                        : card.selectedNumbers.some((number, numberIndex) =>
+                            isNumberCorrect(numberIndex, number)
+                          )
+                        ? require("../../assets/card-win.png")
+                        : require("../../assets/card.png")
+                      : require("../../assets/Card-bg-empty.png") // Usar imagem de fundo quando o cartão estiver desativado
                   }
                   resizeMode="stretch"
                   className="w-full h-full items-center pt-[1px] pb-[2px]"
                 >
-                  <View className="w-full justify-center flex-row p-[8px]">
-                  {card.isActive ? (
+                  <View className="w-full justify-center flex-row px-[8px] pt-[8px] pb-[6px]">
+                    {card.isActive ? (
                       card.selectedNumbers.map((number, numberIndex) => (
                         <SelectedNumberCard
                           key={numberIndex}
@@ -397,35 +458,34 @@ export default function Game() {
                       >
                         <Image
                           source={require("../../assets/activateButton.png")}
+                          className="w-[116px] h-[22px] rounded-md"
+                          resizeMode="stretch"
                         />
                       </TouchableOpacity>
                     )}
                   </View>
 
                   {card.isActive && (
-                    <View className="flex-row justify-between w-full px-[8px]">
-                    <TouchableOpacity
+                    <View className="flex-row justify-between w-full  px-[10px]">
+                      <TouchableOpacity
                         className="justify-center items-center w-[50%] rounded-md"
                         onPress={() => handleRandomNumbers(index)}
                       >
                         <Image
                           source={require("../../assets/randomButton.png")}
-                          style={{
-                            width: 116,
-                            height: 22,
-                          }}
+                          className="w-full h-[22px] rounded-md"
+                          resizeMode="stretch"
                         />
                       </TouchableOpacity>
+                      <View className="w-[2px]" />
                       <TouchableOpacity
-                        className="justify-center items-center rounded-md w-[49%]"
+                        className="justify-center items-center w-[50%] rounded-md"
                         onPress={() => toggleCardActivation(index)}
                       >
                         <Image
                           source={require("../../assets/deactivateButton.png")}
-                          style={{
-                            width: 116,
-                            height: 22,
-                          }}
+                          className="w-full h-[22px] rounded-md"
+                          resizeMode="stretch"
                         />
                       </TouchableOpacity>
                     </View>
@@ -439,20 +499,21 @@ export default function Game() {
             {cards.slice(2, 4).map((card, index) => (
               <View key={index} className="w-full h-[52%] relative">
                 <ImageBackground
-                   source={
-                    isClicked
-                      ? require("../../assets/card.png")
-                      : card.isActive &&
-                        card.selectedNumbers.some((number, numberIndex) =>
-                          isNumberCorrect(numberIndex, number)
-                        )
-                      ? require("../../assets/card-win.png")
-                      : require("../../assets/card.png")
+                  source={
+                    card.isActive
+                      ? isClicked
+                        ? require("../../assets/card.png")
+                        : card.selectedNumbers.some((number, numberIndex) =>
+                            isNumberCorrect(numberIndex, number)
+                          )
+                        ? require("../../assets/card-win.png")
+                        : require("../../assets/card.png")
+                      : require("../../assets/Card-bg-empty.png") // Usar imagem de fundo quando o cartão estiver desativado
                   }
-                  className="w-full h-full items-center pt-[1px] pb-[2px]"
                   resizeMode="stretch"
+                  className="w-full h-full items-center pt-[1px] pb-[2px]"
                 >
-                  <View className="w-full justify-center flex-row p-[8px]">
+                  <View className="w-full justify-center flex-row px-[8px] pt-[8px] pb-[6px]">
                     {card.isActive ? (
                       card.selectedNumbers.map((number, numberIndex) => (
                         <SelectedNumberCard
@@ -460,7 +521,11 @@ export default function Game() {
                           number={number}
                           onPress={(newNumber: number) => {
                             setIsClicked(true);
-                            handleNumberChange(index + 2, numberIndex, newNumber);
+                            handleNumberChange(
+                              index + 2,
+                              numberIndex,
+                              newNumber
+                            );
                           }}
                           isCorrect={isNumberCorrect(numberIndex, number)}
                           isClicked={isClicked}
@@ -473,35 +538,34 @@ export default function Game() {
                       >
                         <Image
                           source={require("../../assets/activateButton.png")}
+                          className="w-[116px] h-[22px] rounded-md"
+                          resizeMode="stretch"
                         />
                       </TouchableOpacity>
                     )}
                   </View>
 
                   {card.isActive && (
-                    <View className="flex-row justify-between w-full px-[8px]">
+                    <View className="flex-row justify-between w-full  px-[10px]">
                       <TouchableOpacity
                         className="justify-center items-center w-[50%] rounded-md"
                         onPress={() => handleRandomNumbers(index + 2)}
                       >
                         <Image
                           source={require("../../assets/randomButton.png")}
-                          style={{
-                            width: 116,
-                            height: 22,
-                          }}
+                          className="w-full h-[22px] rounded-md"
+                          resizeMode="stretch"
                         />
                       </TouchableOpacity>
+                      <View className="w-[2px]" />
                       <TouchableOpacity
-                        className="justify-center items-center rounded-md w-[49%]"
+                        className="justify-center items-center w-[50%] rounded-md"
                         onPress={() => toggleCardActivation(index + 2)}
                       >
                         <Image
                           source={require("../../assets/deactivateButton.png")}
-                          style={{
-                            width: 116,
-                            height: 22,
-                          }}
+                          className="w-full h-[22px] rounded-md"
+                          resizeMode="stretch"
                         />
                       </TouchableOpacity>
                     </View>
@@ -516,7 +580,7 @@ export default function Game() {
       <View className="w-1/5 px-1 items-center py-1 z-100">
         {/* Cards ativos */}
         <View className="rounded-md w-full h-3/5 flex-col items-center">
-          <View className="bg-[#101010] flex-row justify-between w-full mb-2">
+          <View className="flex-row justify-between w-full mb-2">
             <Coins />
             {user && user.photoURL ? (
               <View className="ml-2">
@@ -554,11 +618,11 @@ export default function Game() {
                   className="rounded-md flex-row justify-between items-center px-5"
                 >
                   <Text className="text-[#606060] text-[9px] font-[MADEKenfolg]">
-                    {result.acertos} Numbers
+                    Card {result.cardIndex}
                   </Text>
                   {result.premio === 0 ? (
                     <Text className="text-[#606060] text-[9px] font-[MADEKenfolg]">
-                      You lost {result.premio}
+                      You lost {result.lost}
                     </Text>
                   ) : (
                     <Text className="text-[#FAB300] text-[9px] font-[MADEKenfolg]">
@@ -575,7 +639,9 @@ export default function Game() {
             className="h-[18px] w-full mt-1"
           >
             <View className="w-full h-full items-end justify-center px-2">
-              <Text className="text-white text-[12px] font-[MADEKenfolg]">$1.938,544,00</Text>
+              <Text className="text-white text-[10px] font-[MADEKenfolg]">
+                $1.938,544,00
+              </Text>
             </View>
           </ImageBackground>
 
@@ -612,9 +678,13 @@ export default function Game() {
                       }
                       className="w-3 h-3"
                     />
-                    <Text className="text-[7px] text-[#DE9E26] font-[MADEKenfolg]">6</Text>
+                    <Text className="text-[7px] text-[#DE9E26] font-[MADEKenfolg]">
+                      6
+                    </Text>
                   </View>
-                  <Text className="text-[7px] text-white mr-1 font-[MADEKenfolg]">2000</Text>
+                  <Text className="text-[7px] text-white mr-1 font-[MADEKenfolg]">
+                    {betAmount * 2000}
+                  </Text>
                 </View>
               </ImageBackground>
               <ImageBackground
@@ -625,7 +695,6 @@ export default function Game() {
                   <View className="flex-row items-center h-full">
                     <Image
                       source={
-                        isAnyMatch &&
                         groupedBets.some(
                           (subArray) => nums[1] === subArray[1]
                         ) &&
@@ -641,9 +710,13 @@ export default function Game() {
                       }
                       className="w-3 h-3"
                     />
-                    <Text className="text-[7px] text-[#DE9E26] font-[MADEKenfolg]">5</Text>
+                    <Text className="text-[7px] text-[#DE9E26] font-[MADEKenfolg]">
+                      5
+                    </Text>
                   </View>
-                  <Text className="text-[7px] text-white mr-1 font-[MADEKenfolg]">500</Text>
+                  <Text className="text-[7px] text-white mr-1 font-[MADEKenfolg]">
+                    {betAmount * 500}
+                  </Text>
                 </View>
               </ImageBackground>
               <ImageBackground
@@ -654,7 +727,6 @@ export default function Game() {
                   <View className="flex-row items-center h-full">
                     <Image
                       source={
-                        isAnyMatch &&
                         groupedBets.some(
                           (subArray) => nums[1] === subArray[1]
                         ) &&
@@ -667,9 +739,13 @@ export default function Game() {
                       }
                       className="w-3 h-3"
                     />
-                    <Text className="text-[7px] text-[#DE9E26] font-[MADEKenfolg]">4</Text>
+                    <Text className="text-[7px] text-[#DE9E26] font-[MADEKenfolg]">
+                      4
+                    </Text>
                   </View>
-                  <Text className="text-[7px] text-white mr-1 font-[MADEKenfolg]">200</Text>
+                  <Text className="text-[7px] text-white mr-1 font-[MADEKenfolg]">
+                    {betAmount * 200}
+                  </Text>
                 </View>
               </ImageBackground>
               <ImageBackground
@@ -680,7 +756,6 @@ export default function Game() {
                   <View className="flex-row items-center h-full">
                     <Image
                       source={
-                        isAnyMatch &&
                         groupedBets.some(
                           (subArray) => nums[1] === subArray[1]
                         ) &&
@@ -692,7 +767,9 @@ export default function Game() {
                     />
                     <Text className="text-[7px] text-[#DE9E26]">3</Text>
                   </View>
-                  <Text className="text-[7px] text-white mr-1">40</Text>
+                  <Text className="text-[7px] text-white mr-1">
+                    {betAmount * 40}
+                  </Text>
                 </View>
               </ImageBackground>
               <ImageBackground
@@ -710,9 +787,13 @@ export default function Game() {
                       }
                       className="w-3 h-3"
                     />
-                    <Text className="text-[7px] text-[#DE9E26] font-[MADEKenfolg]">2</Text>
+                    <Text className="text-[7px] text-[#DE9E26] font-[MADEKenfolg]">
+                      2
+                    </Text>
                   </View>
-                  <Text className="text-[7px] text-white mr-1 font-[MADEKenfolg]">8</Text>
+                  <Text className="text-[7px] text-white mr-1 font-[MADEKenfolg]">
+                    {betAmount * 8}
+                  </Text>
                 </View>
               </ImageBackground>
               <ImageBackground
@@ -732,9 +813,13 @@ export default function Game() {
                         className="w-3 h-3"
                       />
                     )}
-                    <Text className="text-[7px] text-[#DE9E26] font-[MADEKenfolg]">1</Text>
+                    <Text className="text-[7px] text-[#DE9E26] font-[MADEKenfolg]">
+                      1
+                    </Text>
                   </View>
-                  <Text className="text-[7px] text-white mr-1 font-[MADEKenfolg]">2</Text>
+                  <Text className="text-[7px] text-white mr-1 font-[MADEKenfolg]">
+                    {betAmount * 2}
+                  </Text>
                 </View>
               </ImageBackground>
               <ImageBackground
@@ -755,9 +840,13 @@ export default function Game() {
                         className="w-3 h-3"
                       />
                     )}
-                    <Text className="text-[7px] text-[#DE9E26] font-[MADEKenfolg]">5</Text>
+                    <Text className="text-[7px] text-[#DE9E26] font-[MADEKenfolg]">
+                      5
+                    </Text>
                   </View>
-                  <Text className="text-[7px] text-white mr-1 font-[MADEKenfolg]">200</Text>
+                  <Text className="text-[7px] text-white mr-1 font-[MADEKenfolg]">
+                    {betAmount * 500}
+                  </Text>
                 </View>
               </ImageBackground>
               <ImageBackground
@@ -778,9 +867,13 @@ export default function Game() {
                         className="w-3 h-3"
                       />
                     )}
-                    <Text className="text-[7px] text-[#DE9E26] font-[MADEKenfolg]">4</Text>
+                    <Text className="text-[7px] text-[#DE9E26] font-[MADEKenfolg]">
+                      4
+                    </Text>
                   </View>
-                  <Text className="text-[7px] text-white mr-1 font-[MADEKenfolg]">30</Text>
+                  <Text className="text-[7px] text-white mr-1 font-[MADEKenfolg]">
+                    {betAmount * 30}
+                  </Text>
                 </View>
               </ImageBackground>
               <ImageBackground
@@ -801,9 +894,13 @@ export default function Game() {
                         className="w-3 h-3"
                       />
                     )}
-                    <Text className="text-[7px] text-[#DE9E26] font-[MADEKenfolg]">3</Text>
+                    <Text className="text-[7px] text-[#DE9E26] font-[MADEKenfolg]">
+                      3
+                    </Text>
                   </View>
-                  <Text className="text-[7px] text-white mr-1 font-[MADEKenfolg]">6</Text>
+                  <Text className="text-[7px] text-white mr-1 font-[MADEKenfolg]">
+                    {betAmount * 6}
+                  </Text>
                 </View>
               </ImageBackground>
             </View>
@@ -831,26 +928,46 @@ export default function Game() {
                     className="w-full h-[40px]"
                     resizeMode="contain"
                   >
-                    <View className="flex-col justify-center px-2 ">
-                      <View className="flex-row justify-between items-center ">
-                        <Text className=" text-white text-[12px] font-[MADEKenfolg]">BET: $</Text>
+                    <View className="flex-col justify-around items-center p-1">
+                      <View className="flex-row items-center justify-center w-full">
+                        <Text
+                          style={{
+                            color: "white",
+                            fontSize: 9,
+                            fontFamily: "MADEKenfolg",
+                            paddingBottom: 1,
+                          }}
+                        >
+                          BET: ${betAmount}
+                        </Text>
                         <TextInput
-                          className="text-white text-[12px] h-[20px] font-[MADEKenfolg]"
-                          placeholderTextColor="#1C242E"
+                          className="absolute left-5 w-[97%] text-xl pt-2 items-center justify-center text-transparent"
                           keyboardType="numeric"
                           placeholder="Enter bet amount..."
-                          value={betAmount.toString()}
-                          onChangeText={(text) =>
-                            setBetAmount(parseFloat(text))
+                          value={
+                            isNaN(betAmount) || betAmount < 0
+                              ? "0"
+                              : betAmount.toString()
                           }
+                          onChangeText={(text) => {
+                            const parsedValue = parseFloat(text);
+                            if (!isNaN(parsedValue) && parsedValue >= 0) {
+                              setBetAmount(parsedValue);
+                            } else {
+                              setBetAmount(0);
+                            }
+                          }}
                         />
+                        <View className="pb-1 px-[1px]">
+                          <Feather name="edit" size={8} color="white" />
+                        </View>
                       </View>
 
-                      <View className="flex-row justify-center items-center">
-                        <Text className="text-white text-[9px] font-[MADEKenfolg]">
+                      <View className="flex-col justify-center items-center">
+                        <Text className="text-white text-[7px] font-[MADEKenfolg]">
                           TOTAL BET:
                         </Text>
-                        <Text className="text-[#187A0D] text-[12px] font-bold ml-[1px] font-[MADEKenfolg]">
+                        <Text className="text-[#187A0D] text-[7px] font-bold mb-[4px] font-[MADEKenfolg]">
                           $ {betAmount * activeCards.length}
                         </Text>
                       </View>
@@ -870,18 +987,17 @@ export default function Game() {
               </View>
 
               <TouchableOpacity
-                className="w-full mt-[4px] justify-center items-center rounded-xl"
+                className="w-full mt-[4px] justify-center items-center rounded-md"
                 onPress={handleTogglePlaying}
               >
-                <ImageBackground
-                  source={require("../../assets/play.png")}
-                  className="w-full h-[62px] items-center justify-center rounded-xl"
-                >
-                  <Image
-                    source={require("../../assets/iconPlay.png")}
-                    className="w-2/3 h-2/3"
-                  />
-                </ImageBackground>
+                <Image
+                  source={
+                    isPlaying
+                      ? require("../../assets/playButtonPressed.png")
+                      : require("../../assets/playButton.png")
+                  }
+                  className="w-full h-[62px] items-center justify-center rounded-md"
+                ></Image>
               </TouchableOpacity>
             </View>
           </View>
