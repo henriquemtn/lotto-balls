@@ -6,6 +6,7 @@ import {
   ScrollView,
   StyleSheet,
   ImageBackground,
+  ToastAndroid,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import TopBar from "../components/TopBar";
@@ -35,10 +36,10 @@ export default function Shop() {
       const intervalId = setInterval(() => {
         const currentTime = new Date();
         const nextClaimTime = new Date(
-          lastClaimedTime.getTime() + 24 * 60 * 10 * 1000
+          lastClaimedTime.getTime() + 24 * 60 * 60 * 1000
         );
         const timeRemaining = nextClaimTime.getTime() - currentTime.getTime();
-
+  
         if (timeRemaining <= 0) {
           clearInterval(intervalId);
           setTimeUntilNextClaim(0);
@@ -46,10 +47,11 @@ export default function Shop() {
           setTimeUntilNextClaim(timeRemaining);
         }
       }, 1000);
-
+  
       return () => clearInterval(intervalId);
     }
   }, [lastClaimedTime]);
+  
 
   const getLastClaimedTime = async (
     currentUser: FirebaseAuthTypes.User | null
@@ -79,16 +81,24 @@ export default function Shop() {
       if (
         !lastClaimedTime ||
         currentTime.getTime() - lastClaimedTime.getTime() >= 24 * 60 * 60 * 1000
-      ) {
+        ) {
         const userRef = firestore().collection("users").doc(user.uid);
         await userRef.update({
           coins: firestore.FieldValue.increment(1000),
           lastClaimedTime: firestore.FieldValue.serverTimestamp(),
         });
 
+        ToastAndroid.show(
+          "Moedas adicionadas com sucesso!",
+          ToastAndroid.SHORT
+        );
         console.log("Moedas adicionadas com sucesso.");
         setLastClaimedTime(currentTime);
       } else {
+        ToastAndroid.show(
+          "Você já reivindicou moedas nas últimas 24 horas.",
+          ToastAndroid.SHORT
+        );
         console.log("Você já reivindicou moedas nas últimas 24 horas.");
       }
     } catch (error) {
@@ -98,12 +108,25 @@ export default function Shop() {
 
   // Renderização do contador de tempo
   const renderTimeUntilNextClaim = () => {
-    if (timeUntilNextClaim === null) return null;
+    if (timeUntilNextClaim === 0) return (
+      <Text className="text-white font-[MADEKenfolg] text-xl">
+        Click Here
+      </Text>
+    );
 
-    const seconds = Math.floor((timeUntilNextClaim / 1000) % 60);
-    const minutes = Math.floor((timeUntilNextClaim / (1000 * 60)) % 60);
-    const hours = Math.floor((timeUntilNextClaim / (1000 * 60 * 60)) % 24);
+    let remainingTime = timeUntilNextClaim;
 
+    console.log(timeUntilNextClaim)
+  
+    const hours = Math.floor(remainingTime / (1000 * 60 * 60));
+    remainingTime %= 1000 * 60 * 60;
+  
+    const minutes = Math.floor(remainingTime / (1000 * 60));
+    remainingTime %= 1000 * 60;
+  
+    const seconds = Math.floor(remainingTime / 1000);
+  
+  
     return (
       <Text className="text-white font-[MADEKenfolg] text-2xl">
         {hours.toString().padStart(2, "0")}:
@@ -112,6 +135,7 @@ export default function Shop() {
       </Text>
     );
   };
+  
 
   useEffect(() => {
     const unsubscribeAuth = auth().onAuthStateChanged((currentUser) => {
@@ -135,8 +159,11 @@ export default function Shop() {
           >
             <ImageBackground
               className="h-[270px] w-full justify-center items-center"
-              source={require("../../assets/freecoinsbuy.png")}
-              resizeMode="stretch"
+              source={
+                timeUntilNextClaim === 0
+                  ? require('../../assets/freecoinsget.png') 
+                  : require('../../assets/freecoinsbuy.png')
+              }              resizeMode="stretch"
             >
               <Text className="z-20 mb-[40%]">{renderTimeUntilNextClaim()}</Text>
             </ImageBackground>
