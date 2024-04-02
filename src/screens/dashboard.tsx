@@ -51,17 +51,18 @@ export default function Dashboard() {
           </View>
         </View>
 
-        <View className="w-1/3 justify-between mt-[55px] py-5">
+        <View className="w-1/3 justify-between ml-2 mt-[55px] py-5">
           <TouchableOpacity onPress={() => navigation.navigate("Shop")} className="w-full h-1/2">
             <Image
               source={require("../../assets/freecoins.png")}
               className="w-full h-full rounded-md"
+              resizeMode="contain"
             />
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => navigation.navigate("Game")}
-            className="mt-4 w-full h-1/2 bg-[#FAB300] rounded-md justify-center items-center"
+            className="mt-4 px-2 w-full h-1/2 rounded-md justify-center items-center"
           >
             <Image
               source={require("../../assets/playButton.png")}

@@ -92,7 +92,6 @@ export default function Roulette({ cardNumber, rouletteNumbers, isClicked }: any
                       width: 68,
                       height: 68,
                       marginHorizontal: 2,
-                      marginTop: 3,
                     }}
                   />
                 </Animated.View>
@@ -110,7 +109,7 @@ export default function Roulette({ cardNumber, rouletteNumbers, isClicked }: any
                       width: 68,
                       height: 68,
                       marginHorizontal: 2,
-                      marginTop: 3,
+                      
                     }}
                   />
                 </Animated.View>

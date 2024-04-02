@@ -40,8 +40,6 @@ export default function Game() {
     []
   );
 
-  console.log(selectedNumbersList);
-
   const [isPlaying, setIsPlaying] = useState(false);
   const [moedas, setMoedas] = useState(0);
 
@@ -285,14 +283,18 @@ export default function Game() {
       betAmount <= moedas &&
       cards.some((card) => card.isActive)
     ) {
-      console.log("Clicado no botão 'Play'");
       setIsPlaying(true); // Define isPlaying como true imediatamente após o clique
       setButtonDisabled(true); // Desabilita o botão imediatamente após o clique
+
 
       // Desabilita o botão após 3 segundos
       setTimeout(() => {
         setIsPlaying(false); // Define isPlaying como false após 3 segundos
         setButtonDisabled(false); // Habilita o botão após 3 segundos
+
+        setShowSuperWin(true);
+        setShowBigWin(true);
+        setShowMegaWin(true);
       }, 2000);
     } else if (betAmount > moedas) {
       ToastAndroid.show(
@@ -322,8 +324,10 @@ export default function Game() {
   }
 
   const [bets, setBets] = useState<number[]>([0, 0, 0, 0, 0, 0]);
-  const [nums, setNums] = useState<number[]>([10, 10, 10, 10, 10, 10]);
+  const [nums, setNums] = useState<number[]>([11, 11, 11, 11, 11, 11]);
   const initialBets = [...bets];
+
+  console.log(nums);
 
   useEffect(() => {
     if (selectedNumbersList && selectedNumbersList.length > 0) {
@@ -335,7 +339,7 @@ export default function Game() {
     if (rouletteNumbers && rouletteNumbers.length > 0) {
       setNums(rouletteNumbers);
     } else {
-      setNums([10, 10, 10, 10, 10, 10]);
+      setNums([11, 11, 11, 11, 11, 11]);
     }
   }, [rouletteNumbers]);
 
@@ -376,9 +380,12 @@ export default function Game() {
           <Animated.View
             entering={ZoomIn.delay(400).duration(800)}
             exiting={ZoomOut.delay(0).duration(0)}
-            className=""
           >
-            <Image source={require("../../assets/MegaWin.png")} />
+            <Image
+              source={require("../../assets/MegaWin.png")}
+              className="w-[480px]"
+              resizeMode="contain"
+            />
           </Animated.View>
         </TouchableOpacity>
       )}
@@ -390,9 +397,12 @@ export default function Game() {
           <Animated.View
             entering={ZoomIn.delay(400).duration(800)}
             exiting={ZoomOut.delay(0).duration(0)}
-            className=""
           >
-            <Image source={require("../../assets/SuperWin.png")} />
+            <Image
+              source={require("../../assets/SuperWin.png")}
+              className="w-[480px]"
+              resizeMode="contain"
+            />
           </Animated.View>
         </TouchableOpacity>
       )}
@@ -404,13 +414,16 @@ export default function Game() {
           <Animated.View
             entering={ZoomIn.delay(400).duration(800)}
             exiting={ZoomOut.delay(0).duration(0)}
-            className=""
           >
-            <Image source={require("../../assets/BigWin.png")} />
+            <Image
+              source={require("../../assets/BigWin.png")}
+              className="w-[480px]"
+              resizeMode="contain"
+            />
           </Animated.View>
         </TouchableOpacity>
       )}
-      <View className="w-[63%] p-1">
+      <View className="w-[500px] p-1">
         {/* Roleta */}
         <Roulette
           rouletteNumbers={rouletteNumbers}
@@ -435,61 +448,61 @@ export default function Game() {
                       : require("../../assets/Card-bg-empty.png") // Usar imagem de fundo quando o cartão estiver desativado
                   }
                   resizeMode="stretch"
-                  className="w-full h-full items-center pt-[1px] pb-[2px]"
+                  className="w-full h-full items-center py-[2px] pr-[2px]"
                 >
-                  <View className="w-full justify-center flex-row px-[8px] pt-[8px] pb-[6px]">
-                    {card.isActive ? (
-                      card.selectedNumbers.map((number, numberIndex) => (
-                        <SelectedNumberCard
-                          key={numberIndex}
-                          number={number}
-                          onPress={(newNumber: number) => {
-                            setIsClicked(true);
-                            handleNumberChange(index, numberIndex, newNumber);
-                          }}
-                          isCorrect={isNumberCorrect(numberIndex, number)}
-                          isClicked={isClicked}
-                        />
-                      ))
-                    ) : (
-                      <TouchableOpacity
-                        className="justify-center p-10 items-center w-full h-full"
-                        onPress={() => toggleCardActivation(index)}
-                      >
-                        <Image
-                          source={require("../../assets/activateButton.png")}
-                          className="w-[116px] h-[22px] rounded-md"
-                          resizeMode="stretch"
-                        />
-                      </TouchableOpacity>
+                  <View className="flex-col w-full items-center justify-center px-[3.6%] pt-[4%] pb-[7%]">
+                    <View className="w-full justify-center flex-row">
+                      {card.isActive ? (
+                        card.selectedNumbers.map((number, numberIndex) => (
+                          <SelectedNumberCard
+                            key={numberIndex}
+                            number={number}
+                            onPress={(newNumber: number) => {
+                              setIsClicked(true);
+                              handleNumberChange(index, numberIndex, newNumber);
+                            }}
+                            isCorrect={isNumberCorrect(numberIndex, number)}
+                            isClicked={isClicked}
+                          />
+                        ))
+                      ) : (
+                        <TouchableOpacity
+                          className="justify-center p-10 items-center w-full h-full"
+                          onPress={() => toggleCardActivation(index)}
+                        >
+                          <Image
+                            source={require("../../assets/activateButton.png")}
+                            className="w-[116px] h-[22px] rounded-md"
+                            resizeMode="stretch"
+                          />
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                    {card.isActive && (
+                      <View className="flex-row justify-between w-full px-[1px] mt-[5px]">
+                        <TouchableOpacity
+                          className="justify-center items-center w-[49.7%] rounded-md"
+                          onPress={() => handleRandomNumbers(index)}
+                        >
+                          <Image
+                            source={require("../../assets/randomButton.png")}
+                            className="w-full h-[25px] rounded-md mt-[1px]"
+                            resizeMode="stretch"
+                          />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          className="justify-center items-center w-[49.7%] rounded-md"
+                          onPress={() => toggleCardActivation(index)}
+                        >
+                          <Image
+                            source={require("../../assets/deactivateButton.png")}
+                            className="w-full h-[25px] rounded-md mt-[1px]"
+                            resizeMode="stretch"
+                          />
+                        </TouchableOpacity>
+                      </View>
                     )}
                   </View>
-
-                  {card.isActive && (
-                    <View className="flex-row justify-between w-full  px-[10px]">
-                      <TouchableOpacity
-                        className="justify-center items-center w-[50%] rounded-md"
-                        onPress={() => handleRandomNumbers(index)}
-                      >
-                        <Image
-                          source={require("../../assets/randomButton.png")}
-                          className="w-full h-[22px] rounded-md"
-                          resizeMode="stretch"
-                        />
-                      </TouchableOpacity>
-                      <View className="w-[2px]" />
-                      <TouchableOpacity
-                        className="justify-center items-center w-[50%] rounded-md"
-                        onPress={() => toggleCardActivation(index)}
-                      >
-                        <Image
-                          source={require("../../assets/deactivateButton.png")}
-                          className="w-full h-[22px] rounded-md"
-                          resizeMode="stretch"
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  )}
                 </ImageBackground>
               </View>
             ))}
@@ -497,7 +510,7 @@ export default function Game() {
 
           <View className="flex-col w-[50%]">
             {cards.slice(2, 4).map((card, index) => (
-              <View key={index} className="w-full h-[52%] relative">
+              <View key={index} className="w-full h-[52%] relative  pl-[2px]">
                 <ImageBackground
                   source={
                     card.isActive
@@ -511,65 +524,65 @@ export default function Game() {
                       : require("../../assets/Card-bg-empty.png") // Usar imagem de fundo quando o cartão estiver desativado
                   }
                   resizeMode="stretch"
-                  className="w-full h-full items-center pt-[1px] pb-[2px]"
+                  className="w-full h-full items-center py-[2px]"
                 >
-                  <View className="w-full justify-center flex-row px-[8px] pt-[8px] pb-[6px]">
-                    {card.isActive ? (
-                      card.selectedNumbers.map((number, numberIndex) => (
-                        <SelectedNumberCard
-                          key={numberIndex}
-                          number={number}
-                          onPress={(newNumber: number) => {
-                            setIsClicked(true);
-                            handleNumberChange(
-                              index + 2,
-                              numberIndex,
-                              newNumber
-                            );
-                          }}
-                          isCorrect={isNumberCorrect(numberIndex, number)}
-                          isClicked={isClicked}
-                        />
-                      ))
-                    ) : (
-                      <TouchableOpacity
-                        className="justify-center p-10 items-center w-full h-full"
-                        onPress={() => toggleCardActivation(index + 2)}
-                      >
-                        <Image
-                          source={require("../../assets/activateButton.png")}
-                          className="w-[116px] h-[22px] rounded-md"
-                          resizeMode="stretch"
-                        />
-                      </TouchableOpacity>
+                  <View className="flex-col w-full justify-center px-[3.6%] pt-[4%] pb-[7%]">
+                    <View className="w-full justify-center flex-row">
+                      {card.isActive ? (
+                        card.selectedNumbers.map((number, numberIndex) => (
+                          <SelectedNumberCard
+                            key={numberIndex}
+                            number={number}
+                            onPress={(newNumber: number) => {
+                              setIsClicked(true);
+                              handleNumberChange(
+                                index + 2,
+                                numberIndex,
+                                newNumber
+                              );
+                            }}
+                            isCorrect={isNumberCorrect(numberIndex, number)}
+                            isClicked={isClicked}
+                          />
+                        ))
+                      ) : (
+                        <TouchableOpacity
+                          className="justify-center p-10 items-center w-full h-full"
+                          onPress={() => toggleCardActivation(index + 2)}
+                        >
+                          <Image
+                            source={require("../../assets/activateButton.png")}
+                            className="w-[116px] h-[22px] rounded-md"
+                            resizeMode="stretch"
+                          />
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                    {card.isActive && (
+                      <View className="flex-row justify-between w-full px-[1px] mt-[5px]">
+                        <TouchableOpacity
+                          className="justify-center items-center w-[49.7%] rounded-md"
+                          onPress={() => handleRandomNumbers(index + 2)}
+                        >
+                          <Image
+                            source={require("../../assets/randomButton.png")}
+                            className="w-full h-[25px] rounded-md mt-[1px]"
+                            resizeMode="stretch"
+                          />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          className="justify-center items-center w-[49.7%] rounded-md"
+                          onPress={() => toggleCardActivation(index + 2)}
+                        >
+                          <Image
+                            source={require("../../assets/deactivateButton.png")}
+                            className="w-full h-[25px] rounded-md mt-[1px]"
+                            resizeMode="stretch"
+                          />
+                        </TouchableOpacity>
+                      </View>
                     )}
                   </View>
-
-                  {card.isActive && (
-                    <View className="flex-row justify-between w-full  px-[10px]">
-                      <TouchableOpacity
-                        className="justify-center items-center w-[50%] rounded-md"
-                        onPress={() => handleRandomNumbers(index + 2)}
-                      >
-                        <Image
-                          source={require("../../assets/randomButton.png")}
-                          className="w-full h-[22px] rounded-md"
-                          resizeMode="stretch"
-                        />
-                      </TouchableOpacity>
-                      <View className="w-[2px]" />
-                      <TouchableOpacity
-                        className="justify-center items-center w-[50%] rounded-md"
-                        onPress={() => toggleCardActivation(index + 2)}
-                      >
-                        <Image
-                          source={require("../../assets/deactivateButton.png")}
-                          className="w-full h-[22px] rounded-md"
-                          resizeMode="stretch"
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  )}
                 </ImageBackground>
               </View>
             ))}
@@ -611,6 +624,7 @@ export default function Game() {
             <ImageBackground
               source={require("../../assets/bg-score.png")}
               className="h-[62px] w-full justify-center"
+              resizeMode="stretch"
             >
               {betResults.map((result, index) => (
                 <View
@@ -659,20 +673,17 @@ export default function Game() {
                   <View className="flex-row items-center h-full">
                     <Image
                       source={
-                        isAnyMatch &&
                         groupedBets.some(
-                          (subArray) => nums[1] === subArray[1]
-                        ) &&
-                        groupedBets.some(
-                          (subArray) => nums[2] === subArray[2]
-                        ) &&
-                        groupedBets.some(
-                          (subArray) => nums[3] === subArray[3]
-                        ) &&
-                        groupedBets.some(
-                          (subArray) => nums[4] === subArray[4]
-                        ) &&
-                        groupedBets.some((subArray) => nums[5] === subArray[5])
+                          (
+                            subArray // Verifica cada cartela ativa
+                          ) =>
+                            (subArray[5] === nums[5] || nums[5] === 10) && // Sexto numero da Cartela ativa for igual ao numero da Roleta OU numero da roleta for 10 ( Gold Bar )
+                            (subArray[4] === nums[4] || nums[4] === 10) && // Quinto numero da Cartela ativa for igual ao numero da Roleta OU numero da roleta for 10 ( Gold Bar )
+                            (subArray[3] === nums[3] || nums[3] === 10) && // Quarto numero da Cartela ativa for igual ao numero da Roleta OU numero da roleta for 10 ( Gold Bar )
+                            (subArray[2] === nums[2] || nums[2] === 10) && // Terceiro numero da Cartela ativa for igual ao numero da Roleta OU numero da roleta for 10 ( Gold Bar )
+                            (subArray[1] === nums[1] || nums[1] === 10) && // Segundo numero da Cartela ativa for igual ao numero da Roleta OU numero da roleta for 10 ( Gold Bar )
+                            (subArray[0] === nums[0] || nums[0] === 10) // Primero numero da Cartela ativa for igual ao numero da Roleta OU numero da roleta for 10 ( Gold Bar )
+                        )
                           ? require("../../assets/light-on.png")
                           : require("../../assets/light-off.png")
                       }
@@ -693,18 +704,17 @@ export default function Game() {
               >
                 <View className="flex-row justify-between items-center">
                   <View className="flex-row items-center h-full">
+                    {/* FIRST 5*/}
                     <Image
                       source={
                         groupedBets.some(
-                          (subArray) => nums[1] === subArray[1]
-                        ) &&
-                        groupedBets.some(
-                          (subArray) => nums[2] === subArray[2]
-                        ) &&
-                        groupedBets.some(
-                          (subArray) => nums[3] === subArray[3]
-                        ) &&
-                        groupedBets.some((subArray) => nums[4] === subArray[4])
+                          (subArray) =>
+                            (subArray[4] === nums[4] || nums[4] === 10) &&
+                            (subArray[3] === nums[3] || nums[3] === 10) &&
+                            (subArray[2] === nums[2] || nums[2] === 10) &&
+                            (subArray[1] === nums[1] || nums[1] === 10) &&
+                            (subArray[0] === nums[0] || nums[0] === 10)
+                        )
                           ? require("../../assets/light-on.png")
                           : require("../../assets/light-off.png")
                       }
@@ -725,15 +735,16 @@ export default function Game() {
               >
                 <View className="flex-row justify-between items-center">
                   <View className="flex-row items-center h-full">
+                    {/* FIRST 4*/}
                     <Image
                       source={
                         groupedBets.some(
-                          (subArray) => nums[1] === subArray[1]
-                        ) &&
-                        groupedBets.some(
-                          (subArray) => nums[2] === subArray[2]
-                        ) &&
-                        groupedBets.some((subArray) => nums[3] === subArray[3])
+                          (subArray) =>
+                            (subArray[3] === nums[3] || nums[3] === 10) &&
+                            (subArray[2] === nums[2] || nums[2] === 10) &&
+                            (subArray[1] === nums[1] || nums[1] === 10) &&
+                            (subArray[0] === nums[0] || nums[0] === 10)
+                        )
                           ? require("../../assets/light-on.png")
                           : require("../../assets/light-off.png")
                       }
@@ -754,12 +765,15 @@ export default function Game() {
               >
                 <View className="flex-row justify-between items-center">
                   <View className="flex-row items-center h-full">
+                    {/* FIRST 3*/}
                     <Image
                       source={
                         groupedBets.some(
-                          (subArray) => nums[1] === subArray[1]
-                        ) &&
-                        groupedBets.some((subArray) => nums[2] === subArray[2])
+                          (subArray) =>
+                            (subArray[2] === nums[2] || nums[2] === 10) &&
+                            (subArray[1] === nums[1] || nums[1] === 10) &&
+                            (subArray[0] === nums[0] || nums[0] === 10)
+                        )
                           ? require("../../assets/light-on.png")
                           : require("../../assets/light-off.png")
                       }
@@ -778,10 +792,14 @@ export default function Game() {
               >
                 <View className="flex-row justify-between items-center">
                   <View className="flex-row items-center h-full">
+                    {/* FIRST 2*/}
                     <Image
                       source={
-                        isAnyMatch &&
-                        groupedBets.some((subArray) => nums[1] === subArray[1])
+                        groupedBets.some(
+                          (subArray) =>
+                            (subArray[1] === nums[1] || nums[1] === 10) &&
+                            (subArray[0] === nums[0] || nums[0] === 10)
+                        )
                           ? require("../../assets/light-on.png")
                           : require("../../assets/light-off.png")
                       }
@@ -802,17 +820,18 @@ export default function Game() {
               >
                 <View className="flex-row justify-between items-center">
                   <View className="flex-row items-center h-full">
-                    {isAnyMatch ? (
-                      <Image
-                        source={require("../../assets/light-on.png")}
-                        className="w-3 h-3"
-                      />
-                    ) : (
-                      <Image
-                        source={require("../../assets/light-off.png")}
-                        className="w-3 h-3"
-                      />
-                    )}
+                    {/* FIRST 1*/}
+                    <Image
+                      source={
+                        groupedBets.some(
+                          (subArray) =>
+                            nums[0] === 10 || subArray[0] === nums[0]
+                        )
+                          ? require("../../assets/light-on.png")
+                          : require("../../assets/light-off.png")
+                      }
+                      className="w-3 h-3"
+                    />
                     <Text className="text-[7px] text-[#DE9E26] font-[MADEKenfolg]">
                       1
                     </Text>

@@ -6,6 +6,7 @@ import {
   Alert,
   TouchableOpacity,
   Image,
+  ToastAndroid,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import auth from "@react-native-firebase/auth";
@@ -58,7 +59,10 @@ export default function SignIn() {
     auth()
       .signInWithEmailAndPassword(email, password)
       .then((result) => {
-        alert("logado com sucesso");
+        ToastAndroid.show(
+          "Login succesfull",
+          ToastAndroid.SHORT
+        );
         console.log(result);
         navigation.navigate("Home");
       })

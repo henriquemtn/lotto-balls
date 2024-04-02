@@ -81,25 +81,25 @@ export default function SelectedNumberCard({
     };
 
   return (
-    <View className="flex-col w-1/6 items-center max-h-[75%] px-[1px]">
+    <View className="flex-col w-1/6 items-center h-[70%] px-[1px]">
       <Image
         source={backgroundImage}
+        resizeMode='stretch'
         style={{
           width: "100%",
           height: "100%",
-          resizeMode: "cover",
-          borderRadius: 4,
         }}
         fadeDuration={0}
       />
 
       <TouchableOpacity
         onPress={incrementNumber}
-        style={{ width: "100%", height: "10%", paddingTop: 1 }}
+        style={{ width: "100%", height: "10%", paddingTop: 3 }}
       >
         <Image
           source={require("../../assets/upButton.png")}
-          className="w-[37px] h-[26px]"
+          className="w-full h-[26px]"
+          resizeMode='stretch'
         />
       </TouchableOpacity>
     </View>

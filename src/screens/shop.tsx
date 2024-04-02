@@ -114,9 +114,7 @@ export default function Shop() {
       </Text>
     );
 
-    let remainingTime = timeUntilNextClaim;
-
-    console.log(timeUntilNextClaim)
+    let remainingTime: any = timeUntilNextClaim;
   
     const hours = Math.floor(remainingTime / (1000 * 60 * 60));
     remainingTime %= 1000 * 60 * 60;
@@ -155,10 +153,10 @@ export default function Shop() {
         <View className="flex-row mt-[75px] items-center justify-center">
           <TouchableOpacity
             onPress={adicionarMoedas}
-            className="w-1/5 mx-[2px] ml-5"
+            className="w-1/5 h-[95%] mx-[2px] ml-5"
           >
             <ImageBackground
-              className="h-[270px] w-full justify-center items-center"
+              className=" w-full h-full justify-center items-center"
               source={
                 timeUntilNextClaim === 0
                   ? require('../../assets/freecoinsget.png') 
@@ -170,29 +168,32 @@ export default function Shop() {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={adicionarMoedas}
-            className="w-1/5  mx-[2px]"
+            className="w-1/5 h-[95%] mx-[2px]"
           >
             <Image
-              className="h-[270px] w-full"
+              className=" w-full h-full justify-center items-center"
               source={require("../../assets/buycoin5.png")}
+              resizeMode="stretch"
             />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={adicionarMoedas}
-            className="w-1/5  mx-[2px]"
+            className="w-1/5 h-[95%] mx-[2px]"
           >
             <Image
-              className="h-[270px] w-full"
+              className=" w-full h-full justify-center items-center"
               source={require("../../assets/buycoin5.png")}
+              resizeMode="stretch"
             />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={adicionarMoedas}
-            className="w-1/5  mx-[2px]"
+            className="w-1/5 h-[95%] mx-[2px]"
           >
             <Image
-              className="h-[270px] w-full"
+              className=" w-full h-full justify-center items-center"
               source={require("../../assets/buycoin5.png")}
+              resizeMode="stretch"
             />
           </TouchableOpacity>
         </View>
