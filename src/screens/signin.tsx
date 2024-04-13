@@ -81,7 +81,7 @@ export default function SignIn() {
           Welcome back! Please enter your details!
         </Text>
 
-        <View className="flex flex-row items-center px-4 w-full  h-12  my-4 rounded-md border-2 border-[#D2D2D2]">
+        <View className="flex flex-row items-center px-4 w-full  h-12 my-2 rounded-md border-2 border-[#D2D2D2]">
           <FontAwesome name="envelope-o" size={24} color="white" />
           <TextInput
             className="text-white pl-4 font-[MADEKenfolg] w-full"
@@ -91,7 +91,7 @@ export default function SignIn() {
           />
         </View>
 
-        <View className="flex flex-row items-center px-4 w-full  h-12 mb-4 rounded-md border-2 border-[#D2D2D2]">
+        <View className="flex flex-row items-center px-4 w-full  h-12 mb-2 rounded-md border-2 border-[#D2D2D2]">
           <FontAwesome name="lock" size={24} color="white" />
           <TextInput
             className="text-white pl-4 w-full font-[MADEKenfolg]"
@@ -104,7 +104,7 @@ export default function SignIn() {
 
         <TouchableOpacity
           onPress={handleSignIn}
-          className="flex-row justify-center mb-[7px] rounded-md items-center w-full h-12"
+          className="flex-row justify-center mb-2 rounded-md items-center w-full h-12"
         >
           <Image
             source={require("../../assets/SignInButton.png")}
@@ -114,7 +114,7 @@ export default function SignIn() {
 
         <TouchableOpacity
           onPress={onGoogleButtonPress}
-          className="flex-row justify-center mb-[7px] rounded-md items-center w-full h-12"
+          className="flex-row justify-center mb-2 rounded-md items-center w-full h-12"
         >
           <Image
             source={require("../../assets/GoogleButton.png")}

@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  Image,
+} from "react-native";
 
 const cardImages: { [key: number]: any } = {
   0: require("../../assets/Plaques/Plaque-0-01.png"),
@@ -49,57 +53,57 @@ export default function SelectedNumberCard({
   const [showAnimation, setShowAnimation] = useState(false); // Estado para controlar a desativação das animações
   const [clickDisabled, setClickDisabled] = useState(false); // Estado para controlar a desativação do clique
 
-
   useEffect(() => {
     // Exibe a animação por um curto período e, em seguida, volta para a imagem do cartão
     if (showAnimation) {
       const timeout = setTimeout(() => {
         setShowAnimation(false);
-      }, 700); // Tempo em milissegundos
+      }, 0);
       return () => clearTimeout(timeout);
     }
   }, [showAnimation]);
 
-  const backgroundImage = showAnimation
-    ? cardAnimation[number] // Mostra a animação se showAnimation for true
-    : isClicked
-    ? cardImages[number]
-    : isCorrect
-    ? cardImagesCorrect[number]
-    : cardImages[number];
+  let backgroundImage;
+  if (showAnimation) {
+    backgroundImage = cardAnimation[number];
+  } else if (isClicked) {
+    backgroundImage = cardImages[number];
+  } else if (isCorrect) {
+    backgroundImage = cardImagesCorrect[number];
+  } else {
+    backgroundImage = cardImages[number];
+  }
 
-    const incrementNumber = () => {
-      if (!clickDisabled) {
-        setShowAnimation(true);
-        const newNumber = (number + 1) % 10; // Incrementa o número atual e faz o módulo 10
-        onPress(newNumber, false); // Chama a função onPress passando o novo número como argumento
-        setClickDisabled(true); // Desativa o clique
-        setTimeout(() => {
-          setClickDisabled(false); // Habilita o clique após 800ms
-        }, 800);
-      }
-    };
+  const incrementNumber = () => {
+    if (!clickDisabled) {
+      setShowAnimation(true);
+      const newNumber = (number + 1) % 10;
+      onPress(newNumber, false);
+      setClickDisabled(true);
+      setTimeout(() => {
+        setClickDisabled(false);
+      }, 800);
+    }
+  };
 
   return (
     <View className="flex-col w-1/6 items-center h-[70%] px-[1px]">
       <Image
         source={backgroundImage}
-        resizeMode='stretch'
-        style={{
-          width: "100%",
-          height: "100%",
-        }}
+        resizeMode="stretch"
+        style={{ width: "100%", height: "100%" }}
         fadeDuration={0}
       />
 
       <TouchableOpacity
         onPress={incrementNumber}
-        style={{ width: "100%", height: "10%", paddingTop: 3 }}
+        style={{ width: "100%", height: "10%", paddingTop: 3 }} 
       >
         <Image
           source={require("../../assets/upButton.png")}
           className="w-full h-[26px]"
-          resizeMode='stretch'
+          resizeMode="stretch"
+          fadeDuration={0}
         />
       </TouchableOpacity>
     </View>

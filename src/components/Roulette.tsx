@@ -1,6 +1,21 @@
-import { StyleSheet, Image, ImageBackground } from "react-native";
+import {
+  StyleSheet,
+  Image,
+  ImageBackground,
+  View,
+  Dimensions,
+} from "react-native";
 import React, { useState, useEffect } from "react";
-import Animated, { PinwheelIn, SlideInRight } from "react-native-reanimated";
+import Animated, {
+  Easing,
+  FadeInRight,
+  PinwheelIn,
+  SlideInRight,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
+import { Keyframe } from "react-native-reanimated";
 
 const ballImages: { [key: number]: any } = {
   0: require("../../assets/Balls/ball-0.png"),
@@ -31,7 +46,15 @@ const ballImagesCorrect: { [key: number]: any } = {
   10: require("../../assets/Balls/goldenbar-placeholder.png"),
 };
 
-export default function Roulette({ cardNumber, rouletteNumbers, isClicked }: any) {
+const { width: windowWidth } = Dimensions.get("window");
+const halfWindowWidth = windowWidth / 2;
+console.log(halfWindowWidth);
+
+export default function Roulette({
+  cardNumber,
+  rouletteNumbers,
+  isClicked,
+}: any) {
   const [bets, setBets] = useState<number[]>([0, 0, 0, 0, 0, 0]);
   const [nums, setNums] = useState<number[]>([11, 11, 11, 11, 11, 11]);
   const initialBets = [...bets];
@@ -55,35 +78,41 @@ export default function Roulette({ cardNumber, rouletteNumbers, isClicked }: any
     const subArray = initialBets.slice(i, i + 6);
     groupedBets.push(subArray);
   }
-  
+
   return (
     <ImageBackground
       source={require("../../assets/roulette.png")}
       className="h-[80px] flex w-full justify-center items-center relative rounded-md"
       resizeMode="stretch"
     >
+      <Image 
+      source={require("../../assets/roulette1.png")}
+      className="absolute h-[80px] flex w-full justify-center items-center z-20 rounded-md"
+      resizeMode="stretch"
+       />
       <Animated.View
         key={rouletteNumbers}
         style={styles.row}
         className="justify-center items-center"
-        entering={SlideInRight.delay(200).duration(500)}
       >
-          {nums &&
+        {nums &&
           nums.map((num: number, index: number) => {
             let matchIndex = -1;
             // Verificar cada subarray de groupedBets para encontrar uma correspondência
             groupedBets.forEach((subArray, arrayIndex) => {
               if (subArray[index] === num) {
                 // Calcular o índice correspondente com base no índice atual e no índice da submatriz
-                matchIndex = (arrayIndex * 6) + index;
+                matchIndex = arrayIndex * 6 + index;
               }
             });
 
+            const delay = index * 200; // Ajuste conforme necessário
+            const duration = 500 + (5 - index) * 150; // Ajuste conforme necessário
+
             if (!isClicked && matchIndex !== -1) {
               return (
-                <Animated.View
-                  key={index}
-                  entering={PinwheelIn.delay(200).duration(1000)}
+                <Animated.View key={index}
+                entering={SlideInRight.delay(delay).duration(duration)}
                 >
                   <Image
                     key={index}
@@ -100,7 +129,7 @@ export default function Roulette({ cardNumber, rouletteNumbers, isClicked }: any
               return (
                 <Animated.View
                   key={index}
-                  entering={PinwheelIn.delay(200).duration(1000)}
+                  entering={SlideInRight.delay(delay).duration(duration)}
                 >
                   <Image
                     key={index}
@@ -109,7 +138,6 @@ export default function Roulette({ cardNumber, rouletteNumbers, isClicked }: any
                       width: 68,
                       height: 68,
                       marginHorizontal: 2,
-                      
                     }}
                   />
                 </Animated.View>
