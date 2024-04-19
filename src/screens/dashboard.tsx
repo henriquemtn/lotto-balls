@@ -22,7 +22,7 @@ export default function Dashboard() {
           />
           <View className="flex-row w-full justify-end items-end gap-1 mt-1">
             <TouchableOpacity
-              onPress={() => navigation.navigate("Shop")}
+              onPress={() => navigation.navigate("GoldRush")}
               className="flex-row h-[60px] rounded-md justify-center items-center"
             >
               <Image

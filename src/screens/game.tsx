@@ -30,21 +30,23 @@ type BetResult = {
 };
 
 export default function Game() {
-  const [betAmount, setBetAmount] = useState(1);
+  const navigation = useNavigation<StackTypes>();
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
+
+  const [betAmount, setBetAmount] = useState(1);
   const [isClicked, setIsClicked] = useState(false);
 
-  const navigation = useNavigation<StackTypes>();
   const [rouletteNumbers, setRouletteNumbers] = useState<number[]>([]);
-  const [betResults, setBetResults] = useState<BetResult[]>([]);
   const [selectedNumbersList, setSelectedNumbersList] = useState<number[][]>(
     []
   );
+  const [betResults, setBetResults] = useState<BetResult[]>([]);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [moedas, setMoedas] = useState(0);
   const bigWinSound = require("../../assets/Sound/bigwin.mp3");
 
+  /*  user firestore account coins sync */
   useEffect(() => {
     const unsubscribeAuth = auth().onAuthStateChanged((currentUser) => {
       setUser(currentUser);
@@ -94,8 +96,6 @@ export default function Game() {
   ]);
 
   const activeCards = cards.filter((card) => card.isActive);
-
-  // Inicialize o maior número de acertos como 0
   const [maiorNumeroDeAcertos, setMaiorNumeroDeAcertos] = useState(0);
 
   useEffect(() => {
@@ -172,56 +172,7 @@ export default function Game() {
     setIsClicked(true);
   };
 
-  const handlePlaceBet = async (currentRouletteNumbers: any) => {
-    try {
-      if (!user) {
-        throw new Error("Usuário não autenticado.");
-      }
-
-      const activeCards = cards.filter((card) => card.isActive);
-
-      if (activeCards.length === 0) {
-        console.log("Nenhum cartão ativo para fazer aposta.");
-        return;
-      }
-
-      const newBetResults: BetResult[] = [];
-
-      for (let index = 0; index < activeCards.length; index++) {
-        const card = activeCards[index];
-        // Realiza a aposta e obtém o resultado
-        const betResult = await placeBet(
-          user,
-          card.selectedNumbers,
-          betAmount,
-          currentRouletteNumbers,
-          index,
-          betAmount
-        );
-
-        // Verifica se o resultado da aposta está disponível
-        if (betResult) {
-          // Calcula a quantidade perdida antes de adicionar ao resultado da aposta
-          const lost = betAmount - betResult.premio;
-          betResult.cardIndex = index + 1;
-          betResult.lost = lost;
-          newBetResults.push(betResult);
-        } else {
-          console.log("Aguardando resultado da roleta...");
-        }
-      }
-
-      // Adiciona os novos resultados de aposta ao estado betResults
-      setBetResults((prevResults) => {
-        const combinedResults = [...prevResults, ...newBetResults];
-        // Limita o número de resultados de aposta a 4, se necessário
-        return combinedResults.slice(-4);
-      });
-    } catch (error) {
-      console.error("Erro ao realizar aposta:", error);
-    }
-  };
-
+ 
   const isNumberCorrect = (numberIndex: number, number: number) => {
     // Verifique se há resultados de aposta
     if (betResults.length > 0) {
@@ -385,6 +336,58 @@ export default function Game() {
     }
   }, [showBigWin, maiorNumeroDeAcertos]);
 
+  const handlePlaceBet = async (currentRouletteNumbers: any) => {
+    try {
+      if (!user) {
+        throw new Error("Usuário não autenticado.");
+      }
+
+      const activeCards = cards.filter((card) => card.isActive);
+
+      if (activeCards.length === 0) {
+        console.log("Nenhum cartão ativo para fazer aposta.");
+        return;
+      }
+
+      const newBetResults: BetResult[] = [];
+
+      for (let index = 0; index < activeCards.length; index++) {
+        const card = activeCards[index];
+        // Realiza a aposta e obtém o resultado
+        const betResult = await placeBet(
+          user,
+          card.selectedNumbers,
+          betAmount,
+          currentRouletteNumbers,
+          index,
+          betAmount,
+        );
+
+        // Verifica se o resultado da aposta está disponível
+        if (betResult) {
+          // Calcula a quantidade perdida antes de adicionar ao resultado da aposta
+          const lost = betAmount - betResult.premio;
+          betResult.cardIndex = index + 1;
+          betResult.lost = lost;
+          newBetResults.push(betResult);
+        } else {
+          console.log("Aguardando resultado da roleta...");
+        }
+      }
+
+      // Adiciona os novos resultados de aposta ao estado betResults
+      console.log(betResults)
+      setBetResults((prevResults) => {
+        const combinedResults = [...prevResults, ...newBetResults];
+        // Limita o número de resultados de aposta a 4, se necessário
+        return combinedResults.slice(-4);
+      });
+    } catch (error) {
+      console.error("Erro ao realizar aposta:", error);
+    }
+  };
+
+  
   return (
     <LinearGradient
       colors={["#281411", "#090606"]}
@@ -617,10 +620,7 @@ export default function Game() {
       </View>
 
       {/* Right Side */}
-      <LinearGradient
-        colors={["#281411", "#090606"]}
-        className="w-2/5 z-100 "
-      >
+      <LinearGradient colors={["#281411", "#090606"]} className="w-2/5 z-100 ">
         <View className="w-1/2 px-1 items-center py-1">
           {/* Cards ativos */}
           <View className="rounded-md w-full h-3/5 flex-col items-center">

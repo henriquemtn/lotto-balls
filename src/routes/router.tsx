@@ -10,6 +10,7 @@ import SignUp from "../screens/signup";
 import Shop from "../screens/shop";
 import Game from "../screens/game";
 import Profile from "../screens/profile";
+import GoldRush from "../screens/goldrush";
 
 const Stack = createNativeStackNavigator();
 
@@ -21,6 +22,7 @@ type StackNavigation = {
   Shop: undefined;
   Game: undefined;
   Profile: undefined;
+  GoldRush: undefined;
 };
 
 export type StackTypes = NativeStackNavigationProp<StackNavigation>;
@@ -30,6 +32,7 @@ export default function Router() {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
+        contentStyle: { backgroundColor: '#000000' },
       }}
     >
       <Stack.Screen name="Welcome" component={Welcome} />
@@ -39,6 +42,7 @@ export default function Router() {
       <Stack.Screen name="Shop" component={Shop} />
       <Stack.Screen name="Game" component={Game} />
       <Stack.Screen name="Profile" component={Profile} />
+      <Stack.Screen name="GoldRush" component={GoldRush} />
     </Stack.Navigator>
   );
 }

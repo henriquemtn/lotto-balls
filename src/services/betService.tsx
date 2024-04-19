@@ -8,7 +8,7 @@ export const placeBet = async (
   betAmount: number,
   rouletteNumbers: number[],
   cardIndex: number,
-  lost: number,
+  lost: number
 ) => {
   try {
     if (!user) {
@@ -16,8 +16,7 @@ export const placeBet = async (
     }
 
     if (betAmount <= 0) {
-      ToastAndroid.show('Valor de aposta inválido.', ToastAndroid.SHORT);
-
+      ToastAndroid.show("Valor de aposta inválido.", ToastAndroid.SHORT);
     }
 
     const userRef = firestore().collection("users").doc(user.uid);
@@ -25,16 +24,28 @@ export const placeBet = async (
     const data = doc.data();
 
     if (!data) {
-      ToastAndroid.show('Houve algum erro ao encontrar o usuário no banco de dados.', ToastAndroid.SHORT);
+      ToastAndroid.show(
+        "Houve algum erro ao encontrar o usuário no banco de dados.",
+        ToastAndroid.SHORT
+      );
       throw new Error("Documento do usuário não encontrado.");
     }
 
     const moedasAntigas = data.coins || 0;
     if (moedasAntigas < betAmount) {
-      ToastAndroid.show('Saldo insuficiente.', ToastAndroid.SHORT);
+      ToastAndroid.show("Saldo insuficiente.", ToastAndroid.SHORT);
     }
 
     const novoSaldo = moedasAntigas - betAmount;
+
+    console.log("select numbers index 0:", selectedNumbers[0]);
+    console.log("select numbers index 1:", selectedNumbers[1]);
+    console.log("select numbers index 2:", selectedNumbers[2]);
+    console.log("select numbers index 3:", selectedNumbers[3]);
+    console.log("select numbers index 4:", selectedNumbers[4]);
+    console.log("select numbers index 5:", selectedNumbers[5]);
+
+
 
     // Calcular a quantidade de acertos
     let acertos = 0;
@@ -47,32 +58,117 @@ export const placeBet = async (
       }
     }
 
+    //console.log("bet amount:", betAmount)
+
     // Calcular o prêmio com base na quantidade de acertos
-    let premio = 0;
+    let premioAcertos = 0;
     switch (acertos) {
       case 0:
       case 1:
-        premio = 0;
+        premioAcertos = 0;
         break;
       case 2:
-        premio = betAmount * 1;
+        premioAcertos = 0;
         break;
       case 3:
-        premio = betAmount * 6; // Ajuste o prêmio para refletir a regra
+        premioAcertos = betAmount * 6; // Ajuste o prêmio para refletir a regra
         break;
       case 4:
-        premio = betAmount * 30; // Ajuste o prêmio para refletir a regra
+        premioAcertos = betAmount * 30; // Ajuste o prêmio para refletir a regra
         break;
       case 5:
-        premio = betAmount * 500; // Ajuste o prêmio para refletir a regra
+        premioAcertos = betAmount * 500; // Ajuste o prêmio para refletir a regra
         break;
       case 6:
-        premio = betAmount * 2000; // Ajuste o prêmio para refletir a regra
+        premioAcertos = betAmount * 2000; // Ajuste o prêmio para refletir a regra
         break;
       default:
-        premio = 0;
+        premioAcertos = 0;
         break;
     }
+
+    //console.log("premioAcertos:", premioAcertos)
+
+    // Calcular a quantidade de acertos do primeiro número
+    let firstAcertos = 0;
+    
+    if (
+      (selectedNumbers[0] === rouletteNumbers[0] || rouletteNumbers[0] === 10) &&
+      (selectedNumbers[1] === rouletteNumbers[1] || rouletteNumbers[1] === 10) && 
+      (selectedNumbers[2] === rouletteNumbers[2] || rouletteNumbers[2] === 10) &&
+      (selectedNumbers[3] === rouletteNumbers[3] || rouletteNumbers[3] === 10) &&
+      (selectedNumbers[4] === rouletteNumbers[4] || rouletteNumbers[4] === 10) &&
+      (selectedNumbers[5] === rouletteNumbers[5] || rouletteNumbers[5] === 10)
+    ) {
+      firstAcertos = 6;
+    } else if (
+      (selectedNumbers[0] === rouletteNumbers[0] || rouletteNumbers[0] === 10) &&
+      (selectedNumbers[1] === rouletteNumbers[1] || rouletteNumbers[1] === 10) && 
+      (selectedNumbers[2] === rouletteNumbers[2] || rouletteNumbers[2] === 10) &&
+      (selectedNumbers[3] === rouletteNumbers[3] || rouletteNumbers[3] === 10) &&
+      (selectedNumbers[4] === rouletteNumbers[4] || rouletteNumbers[4] === 10)
+    ) {
+      firstAcertos = 5;
+    } else if (
+      (selectedNumbers[0] === rouletteNumbers[0] || rouletteNumbers[0] === 10) &&
+      (selectedNumbers[1] === rouletteNumbers[1] || rouletteNumbers[1] === 10) && 
+      (selectedNumbers[2] === rouletteNumbers[2] || rouletteNumbers[2] === 10) &&
+      (selectedNumbers[3] === rouletteNumbers[3] || rouletteNumbers[3] === 10)
+    ) {
+      firstAcertos = 4;
+    } else if (
+      (selectedNumbers[0] === rouletteNumbers[0] || rouletteNumbers[0] === 10) &&
+      (selectedNumbers[1] === rouletteNumbers[1] || rouletteNumbers[1] === 10) && 
+      (selectedNumbers[2] === rouletteNumbers[2] || rouletteNumbers[2] === 10)
+    ) {
+      console.log(selectedNumbers[2], "é igual a:", rouletteNumbers[2])
+      firstAcertos = 3;
+    } else if (
+      (selectedNumbers[0] === rouletteNumbers[0] || rouletteNumbers[0] === 10) &&
+      (selectedNumbers[1] === rouletteNumbers[1] || rouletteNumbers[1] === 10)
+    ) {
+      console.log(selectedNumbers[0], "é igual a:", rouletteNumbers[0], "e", selectedNumbers[1], "é igual a:", rouletteNumbers[1])
+      firstAcertos = 2;
+    } else if (selectedNumbers[0] === rouletteNumbers[0] || rouletteNumbers[0] === 10) {
+      firstAcertos = 1;
+    }    
+
+    console.log("firstAcertos:", firstAcertos);
+
+    let premioFirstAcertos = 0;
+    switch (firstAcertos) {
+      case 0:
+        premioFirstAcertos = 0;
+        break;
+      case 1:
+        premioFirstAcertos = betAmount * 2;
+        break;
+      case 2:
+        premioFirstAcertos = betAmount * 8;
+        break;
+      case 3:
+        premioFirstAcertos = betAmount * 40;
+        break;
+      case 4:
+        premioFirstAcertos = betAmount * 200;
+        break;
+      case 5:
+        premioFirstAcertos = betAmount * 500;
+        break;
+      case 6:
+        premioFirstAcertos = betAmount * 2000;
+        break;
+      default:
+        premioFirstAcertos = 0;
+        break;
+    }
+
+    //console.log("Premio FirstAcertos:", premioFirstAcertos)
+
+    // Calcular o prêmio total somando os prêmios de acertos e de firstValue
+    const premio = premioAcertos + premioFirstAcertos;
+
+    //console.log("premio:", premio)
 
     const lost = betAmount - premio;
 
@@ -85,7 +181,8 @@ export const placeBet = async (
       acertos,
       premio,
       cardIndex,
-      lost
+      lost,
+      firstAcertos,
     };
   } catch (error) {
     throw error;
