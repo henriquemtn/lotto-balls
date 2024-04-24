@@ -33,6 +33,9 @@ export default function Game() {
   const navigation = useNavigation<StackTypes>();
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
 
+  const [playClicked, setPlayClicked] = useState(false);
+  const [shouldNavigate, setShouldNavigate] = useState(false);
+
   const [betAmount, setBetAmount] = useState(1);
   const [isClicked, setIsClicked] = useState(false);
 
@@ -172,7 +175,6 @@ export default function Game() {
     setIsClicked(true);
   };
 
- 
   const isNumberCorrect = (numberIndex: number, number: number) => {
     // Verifique se há resultados de aposta
     if (betResults.length > 0) {
@@ -247,6 +249,7 @@ export default function Game() {
         setShowSuperWin(true);
         setShowBigWin(true);
         setShowMegaWin(true);
+        setPlayClicked(true); // Marca que o botão Play foi clicado
       }, 2000);
     } else if (betAmount > moedas) {
       ToastAndroid.show(
@@ -258,10 +261,16 @@ export default function Game() {
 
   useEffect(() => {
     if (isPlaying) {
-      // Verifique se o jogo está em andamento antes de gerar números aleatórios
       generateRandomNumbers();
     }
   }, [isPlaying]);
+
+  // Atualiza a condição isLightOnFirst1 quando o botão Play é clicado
+  useEffect(() => {
+    if (playClicked) {
+      setShouldNavigate(true); // Define que a navegação deve ocorrer
+    }
+  }, [playClicked]);
 
   let userImageSource = require("../../assets/avatar.png"); // imagem padrão
   if (user && user.photoURL) {
@@ -306,16 +315,19 @@ export default function Game() {
   const handleMegaWinClick = () => {
     setShowMegaWin(false);
     setMaiorNumeroDeAcertos(0);
+    checkAndNavigateGoldRush
   };
 
   const handleSuperWinClick = () => {
     setShowSuperWin(false);
     setMaiorNumeroDeAcertos(0);
+    checkAndNavigateGoldRush
   };
 
   const handleBigWinClick = () => {
     setShowBigWin(false);
     setMaiorNumeroDeAcertos(0);
+    checkAndNavigateGoldRush
   };
 
   // Função para reproduzir o som
@@ -360,7 +372,7 @@ export default function Game() {
           betAmount,
           currentRouletteNumbers,
           index,
-          betAmount,
+          betAmount
         );
 
         // Verifica se o resultado da aposta está disponível
@@ -374,9 +386,8 @@ export default function Game() {
           console.log("Aguardando resultado da roleta...");
         }
       }
-
       // Adiciona os novos resultados de aposta ao estado betResults
-      console.log(betResults)
+      console.log(betResults);
       setBetResults((prevResults) => {
         const combinedResults = [...prevResults, ...newBetResults];
         // Limita o número de resultados de aposta a 4, se necessário
@@ -387,7 +398,78 @@ export default function Game() {
     }
   };
 
+  const checkAndNavigateGoldRush = () => {
+    if (
+      isLightOnFirst1
+    ) {
+      console.log("GOLD RUSH ATIVO");
+      navigation.navigate("GoldRush");
+    }
+  };
   
+
+  const isLightOnFirst6 = groupedBets.some(
+    (subArray) =>
+      (subArray[5] === nums[5] || nums[5] === 10) &&
+      (subArray[4] === nums[4] || nums[4] === 10) &&
+      (subArray[3] === nums[3] || nums[3] === 10) &&
+      (subArray[2] === nums[2] || nums[2] === 10) &&
+      (subArray[1] === nums[1] || nums[1] === 10) &&
+      (subArray[0] === nums[0] || nums[0] === 10)
+  );
+
+  const isLightOnFirst5 = groupedBets.some(
+    (subArray) =>
+      (subArray[4] === nums[4] || nums[4] === 10) &&
+      (subArray[3] === nums[3] || nums[3] === 10) &&
+      (subArray[2] === nums[2] || nums[2] === 10) &&
+      (subArray[1] === nums[1] || nums[1] === 10) &&
+      (subArray[0] === nums[0] || nums[0] === 10)
+  );
+
+  const isLightOnFirst4 = groupedBets.some(
+    (subArray) =>
+      (subArray[3] === nums[3] || nums[3] === 10) &&
+      (subArray[2] === nums[2] || nums[2] === 10) &&
+      (subArray[1] === nums[1] || nums[1] === 10) &&
+      (subArray[0] === nums[0] || nums[0] === 10)
+  );
+
+  const isLightOnFirst3 = groupedBets.some(
+    (subArray) =>
+      (subArray[2] === nums[2] || nums[2] === 10) &&
+      (subArray[1] === nums[1] || nums[1] === 10) &&
+      (subArray[0] === nums[0] || nums[0] === 10)
+  );
+
+  const isLightOnFirst2 = groupedBets.some(
+    (subArray) =>
+      (subArray[1] === nums[1] || nums[1] === 10) &&
+      (subArray[0] === nums[0] || nums[0] === 10)
+  );
+
+  const isLightOnFirst1 = groupedBets.some(
+    (subArray) =>
+      (subArray[0] === nums[0] || nums[0] === 10)
+  );
+
+  useEffect(() => {
+    const checkAndNavigateGoldRush = () => {
+      if (isLightOnFirst1 && shouldNavigate) {
+        console.log("GOLD RUSH ATIVO");
+        setTimeout(() => {
+          navigation.navigate("GoldRush");
+        }, 3000);
+        // Reseta os estados após a navegação
+        setShouldNavigate(false);
+        setPlayClicked(false);
+      }
+    };
+    checkAndNavigateGoldRush();
+
+    // Este efeito só precisa rodar quando isLightOnFirst1, shouldNavigate ou navigation mudarem
+  }, [isLightOnFirst1, shouldNavigate, navigation]);
+
   return (
     <LinearGradient
       colors={["#281411", "#090606"]}
@@ -704,17 +786,7 @@ export default function Game() {
                     <View className="flex-row items-center h-full">
                       <Image
                         source={
-                          groupedBets.some(
-                            (
-                              subArray // Verifica cada cartela ativa
-                            ) =>
-                              (subArray[5] === nums[5] || nums[5] === 10) && // Sexto numero da Cartela ativa for igual ao numero da Roleta OU numero da roleta for 10 ( Gold Bar )
-                              (subArray[4] === nums[4] || nums[4] === 10) && // Quinto numero da Cartela ativa for igual ao numero da Roleta OU numero da roleta for 10 ( Gold Bar )
-                              (subArray[3] === nums[3] || nums[3] === 10) && // Quarto numero da Cartela ativa for igual ao numero da Roleta OU numero da roleta for 10 ( Gold Bar )
-                              (subArray[2] === nums[2] || nums[2] === 10) && // Terceiro numero da Cartela ativa for igual ao numero da Roleta OU numero da roleta for 10 ( Gold Bar )
-                              (subArray[1] === nums[1] || nums[1] === 10) && // Segundo numero da Cartela ativa for igual ao numero da Roleta OU numero da roleta for 10 ( Gold Bar )
-                              (subArray[0] === nums[0] || nums[0] === 10) // Primero numero da Cartela ativa for igual ao numero da Roleta OU numero da roleta for 10 ( Gold Bar )
-                          )
+                          isLightOnFirst6
                             ? require("../../assets/light-on.png")
                             : require("../../assets/light-off.png")
                         }
@@ -738,14 +810,7 @@ export default function Game() {
                       {/* FIRST 5*/}
                       <Image
                         source={
-                          groupedBets.some(
-                            (subArray) =>
-                              (subArray[4] === nums[4] || nums[4] === 10) &&
-                              (subArray[3] === nums[3] || nums[3] === 10) &&
-                              (subArray[2] === nums[2] || nums[2] === 10) &&
-                              (subArray[1] === nums[1] || nums[1] === 10) &&
-                              (subArray[0] === nums[0] || nums[0] === 10)
-                          )
+                          isLightOnFirst5
                             ? require("../../assets/light-on.png")
                             : require("../../assets/light-off.png")
                         }
@@ -769,13 +834,7 @@ export default function Game() {
                       {/* FIRST 4*/}
                       <Image
                         source={
-                          groupedBets.some(
-                            (subArray) =>
-                              (subArray[3] === nums[3] || nums[3] === 10) &&
-                              (subArray[2] === nums[2] || nums[2] === 10) &&
-                              (subArray[1] === nums[1] || nums[1] === 10) &&
-                              (subArray[0] === nums[0] || nums[0] === 10)
-                          )
+                          isLightOnFirst4
                             ? require("../../assets/light-on.png")
                             : require("../../assets/light-off.png")
                         }
@@ -799,12 +858,7 @@ export default function Game() {
                       {/* FIRST 3*/}
                       <Image
                         source={
-                          groupedBets.some(
-                            (subArray) =>
-                              (subArray[2] === nums[2] || nums[2] === 10) &&
-                              (subArray[1] === nums[1] || nums[1] === 10) &&
-                              (subArray[0] === nums[0] || nums[0] === 10)
-                          )
+                          isLightOnFirst3
                             ? require("../../assets/light-on.png")
                             : require("../../assets/light-off.png")
                         }
@@ -826,11 +880,7 @@ export default function Game() {
                       {/* FIRST 2*/}
                       <Image
                         source={
-                          groupedBets.some(
-                            (subArray) =>
-                              (subArray[1] === nums[1] || nums[1] === 10) &&
-                              (subArray[0] === nums[0] || nums[0] === 10)
-                          )
+                          isLightOnFirst2
                             ? require("../../assets/light-on.png")
                             : require("../../assets/light-off.png")
                         }
@@ -854,10 +904,7 @@ export default function Game() {
                       {/* FIRST 1*/}
                       <Image
                         source={
-                          groupedBets.some(
-                            (subArray) =>
-                              nums[0] === 10 || subArray[0] === nums[0]
-                          )
+                          isLightOnFirst1
                             ? require("../../assets/light-on.png")
                             : require("../../assets/light-off.png")
                         }
