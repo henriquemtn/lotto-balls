@@ -1,4 +1,4 @@
-package com.starwhenry.goldenlotto
+package com.starwhenry.lottoballs
 
 import android.app.Application
 import android.content.res.Configuration

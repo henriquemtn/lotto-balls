@@ -1,4 +1,4 @@
-package com.starwhenry.goldenlotto
+package com.starwhenry.lottoballs
 
 import android.os.Build
 import android.os.Bundle

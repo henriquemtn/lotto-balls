@@ -92,13 +92,17 @@ export default function Game() {
   }, []);
 
   const [cards, setCards] = useState([
-    { isActive: true, selectedNumbers: Array(6).fill(0) },
-    { isActive: true, selectedNumbers: Array(6).fill(0) },
-    { isActive: true, selectedNumbers: Array(6).fill(0) },
-    { isActive: true, selectedNumbers: Array(6).fill(0) },
+    { isActive: true, selectedNumbers: Array(6).fill(0), cardNumber: 1 },
+    { isActive: true, selectedNumbers: Array(6).fill(0), cardNumber: 2 },
+    { isActive: true, selectedNumbers: Array(6).fill(0), cardNumber: 3 },
+    { isActive: true, selectedNumbers: Array(6).fill(0), cardNumber: 4 },
   ]);
 
-  const activeCards = cards.filter((card) => card.isActive);
+  const activeCards = cards
+    .map((card, index) => ({ ...card, originalIndex: index }))
+    .filter((card) => card.isActive)
+    .sort((a, b) => a.originalIndex - b.originalIndex);
+
   const [maiorNumeroDeAcertos, setMaiorNumeroDeAcertos] = useState(0);
 
   useEffect(() => {
@@ -235,25 +239,35 @@ export default function Game() {
     if (
       !buttonDisabled &&
       betAmount >= 1 &&
-      betAmount <= moedas &&
+      betAmount * activeCards.length <= moedas &&
       cards.some((card) => card.isActive)
     ) {
       setIsPlaying(true); // Define isPlaying como true imediatamente após o clique
       setButtonDisabled(true); // Desabilita o botão imediatamente após o clique
+      setIsClicked(true);
+
+      handleCloseResultOne
+      handleCloseResultTwo
+      handleCloseResultThird
+      handleCloseResultFour
 
       // Desabilita o botão após 3 segundos
       setTimeout(() => {
         setIsPlaying(false); // Define isPlaying como false após 3 segundos
         setButtonDisabled(false); // Habilita o botão após 3 segundos
-
+        setIsClicked(false);
         setShowSuperWin(true);
         setShowBigWin(true);
         setShowMegaWin(true);
         setPlayClicked(true); // Marca que o botão Play foi clicado
+        setResultOneShow(true);
+        setResultTwoShow(true);
+        setResultThirdShow(true);
+        setResultFourShow(true);
       }, 2000);
-    } else if (betAmount > moedas) {
+    } else if (betAmount * activeCards.length > moedas) {
       ToastAndroid.show(
-        "Saldo insuficiente para fazer a aposta!",
+        "Insufficient balance to place the bet!",
         ToastAndroid.SHORT
       );
     }
@@ -280,7 +294,6 @@ export default function Game() {
     } else {
       // Se for uma URL, use-a diretamente
       userImageSource = { uri: user.photoURL };
-      console.log(user.photoURL);
     }
   }
 
@@ -315,19 +328,19 @@ export default function Game() {
   const handleMegaWinClick = () => {
     setShowMegaWin(false);
     setMaiorNumeroDeAcertos(0);
-    checkAndNavigateGoldRush
+    checkAndNavigateGoldRush;
   };
 
   const handleSuperWinClick = () => {
     setShowSuperWin(false);
     setMaiorNumeroDeAcertos(0);
-    checkAndNavigateGoldRush
+    checkAndNavigateGoldRush;
   };
 
   const handleBigWinClick = () => {
     setShowBigWin(false);
     setMaiorNumeroDeAcertos(0);
-    checkAndNavigateGoldRush
+    checkAndNavigateGoldRush;
   };
 
   // Função para reproduzir o som
@@ -387,7 +400,6 @@ export default function Game() {
         }
       }
       // Adiciona os novos resultados de aposta ao estado betResults
-      console.log(betResults);
       setBetResults((prevResults) => {
         const combinedResults = [...prevResults, ...newBetResults];
         // Limita o número de resultados de aposta a 4, se necessário
@@ -399,14 +411,11 @@ export default function Game() {
   };
 
   const checkAndNavigateGoldRush = () => {
-    if (
-      isLightOnFirst1
-    ) {
+    if (isLightOnFirst1) {
       console.log("GOLD RUSH ATIVO");
       navigation.navigate("GoldRush");
     }
   };
-  
 
   const isLightOnFirst6 = groupedBets.some(
     (subArray) =>
@@ -449,13 +458,13 @@ export default function Game() {
   );
 
   const isLightOnFirst1 = groupedBets.some(
-    (subArray) =>
-      (subArray[0] === nums[0] || nums[0] === 10)
+    (subArray) => subArray[0] === nums[0] || nums[0] === 10
   );
 
   useEffect(() => {
     const checkAndNavigateGoldRush = () => {
-      if (isLightOnFirst1 && shouldNavigate) {
+      console.log(shouldNavigate);
+      if (isLightOnFirst3) {
         console.log("GOLD RUSH ATIVO");
         setTimeout(() => {
           navigation.navigate("GoldRush");
@@ -469,6 +478,32 @@ export default function Game() {
 
     // Este efeito só precisa rodar quando isLightOnFirst1, shouldNavigate ou navigation mudarem
   }, [isLightOnFirst1, shouldNavigate, navigation]);
+
+  const [resultOneShow, setResultOneShow] = useState(true);
+  const [resultTwoShow, setResultTwoShow] = useState(true);
+  const [resultThirdShow, setResultThirdShow] = useState(true);
+  const [resultFourShow, setResultFourShow] = useState(true);
+
+  const handleCloseResultOne = () => {
+    setResultOneShow(false);
+    setIsClicked(true);
+  };
+
+  const handleCloseResultTwo = () => {
+    setResultTwoShow(false);
+    setIsClicked(true);
+  };
+
+  const handleCloseResultThird = () => {
+    setResultThirdShow(false);
+    setIsClicked(true);
+  };
+
+  const handleCloseResultFour = () => {
+    setResultFourShow(false);
+    setIsClicked(true);
+  };
+
 
   return (
     <LinearGradient
@@ -492,7 +527,7 @@ export default function Game() {
           </Animated.View>
         </TouchableOpacity>
       )}
-      {showSuperWin && maiorNumeroDeAcertos === 4 && (
+      {showSuperWin && maiorNumeroDeAcertos === 4 &&  (
         <TouchableOpacity
           className="z-20 absolute w-full h-full items-center justify-center bg-black/50"
           onPress={handleSuperWinClick}
@@ -509,7 +544,7 @@ export default function Game() {
           </Animated.View>
         </TouchableOpacity>
       )}
-      {showBigWin && maiorNumeroDeAcertos === 3 && (
+      {showBigWin && maiorNumeroDeAcertos === 3 &&  (
         <TouchableOpacity
           className="z-20 absolute w-full h-full items-center justify-center bg-black/50"
           onPress={handleBigWinClick}
@@ -537,90 +572,13 @@ export default function Game() {
             isClicked={isClicked}
           />
 
-          <View className="flex-row w-full h-[75%] mt-[4px]">
-            <View className="flex-col w-[50%]">
-              {cards.slice(0, 2).map((card, index) => (
-                <View key={index} className="w-full h-[52%] relative">
-                  <ImageBackground
-                    source={
-                      card.isActive
-                        ? isClicked
-                          ? require("../../assets/card.png")
-                          : card.selectedNumbers.some((number, numberIndex) =>
-                              isNumberCorrect(numberIndex, number)
-                            )
-                          ? require("../../assets/card-win.png")
-                          : require("../../assets/card.png")
-                        : require("../../assets/Card-bg-empty.png") // Usar imagem de fundo quando o cartão estiver desativado
-                    }
-                    resizeMode="stretch"
-                    className="w-full h-full items-center py-[2px] pr-[2px]"
-                  >
-                    <View className="flex-col w-full items-center justify-center px-[3.6%] pt-[4%] pb-[7%]">
-                      <View className="w-full justify-center flex-row">
-                        {card.isActive ? (
-                          card.selectedNumbers.map((number, numberIndex) => (
-                            <SelectedNumberCard
-                              key={numberIndex}
-                              number={number}
-                              onPress={(newNumber: number) => {
-                                setIsClicked(true);
-                                handleNumberChange(
-                                  index,
-                                  numberIndex,
-                                  newNumber
-                                );
-                              }}
-                              isCorrect={isNumberCorrect(numberIndex, number)}
-                              isClicked={isClicked}
-                            />
-                          ))
-                        ) : (
-                          <TouchableOpacity
-                            className="justify-center p-10 items-center w-full h-full"
-                            onPress={() => toggleCardActivation(index)}
-                          >
-                            <Image
-                              source={require("../../assets/activateButton.png")}
-                              className="w-[116px] h-[22px] rounded-md"
-                              resizeMode="stretch"
-                            />
-                          </TouchableOpacity>
-                        )}
-                      </View>
-                      {card.isActive && (
-                        <View className="flex-row justify-between w-full px-[1px] mt-[5px]">
-                          <TouchableOpacity
-                            className="justify-center items-center w-[49.7%] rounded-md"
-                            onPress={() => handleRandomNumbers(index)}
-                          >
-                            <Image
-                              source={require("../../assets/randomButton.png")}
-                              className="w-full h-[25px] rounded-md mt-[1px]"
-                              resizeMode="stretch"
-                            />
-                          </TouchableOpacity>
-                          <TouchableOpacity
-                            className="justify-center items-center w-[49.7%] rounded-md"
-                            onPress={() => toggleCardActivation(index)}
-                          >
-                            <Image
-                              source={require("../../assets/deactivateButton.png")}
-                              className="w-full h-[25px] rounded-md mt-[1px]"
-                              resizeMode="stretch"
-                            />
-                          </TouchableOpacity>
-                        </View>
-                      )}
-                    </View>
-                  </ImageBackground>
-                </View>
-              ))}
-            </View>
-
-            <View className="flex-col w-[50%]">
-              {cards.slice(2, 4).map((card, index) => (
-                <View key={index} className="w-full h-[52%] relative  pl-[2px]">
+          <View className="flex-col w-full h-[51%] mt-[4px]">
+            <View className="flex-row w-[50%]">
+              {cards.slice(0, 2).map((card, sliceIndex) => (
+                <View
+                  key={sliceIndex}
+                  className="w-full h-full relative pl-[2px]"
+                >
                   <ImageBackground
                     source={
                       card.isActive
@@ -646,7 +604,7 @@ export default function Game() {
                               onPress={(newNumber: number) => {
                                 setIsClicked(true);
                                 handleNumberChange(
-                                  index + 2,
+                                  sliceIndex, // Ajuste do índice para corresponder ao número do card
                                   numberIndex,
                                   newNumber
                                 );
@@ -658,7 +616,7 @@ export default function Game() {
                         ) : (
                           <TouchableOpacity
                             className="justify-center p-10 items-center w-full h-full"
-                            onPress={() => toggleCardActivation(index + 2)}
+                            onPress={() => toggleCardActivation(sliceIndex)} // Ajuste do índice para corresponder ao número do card
                           >
                             <Image
                               source={require("../../assets/activateButton.png")}
@@ -668,11 +626,74 @@ export default function Game() {
                           </TouchableOpacity>
                         )}
                       </View>
+
                       {card.isActive && (
-                        <View className="flex-row justify-between w-full px-[1px] mt-[5px]">
+                        <View className="flex-row justify-between w-full mt-[5px]">
+                          {card.selectedNumbers.some((number, numberIndex) =>
+                            isNumberCorrect(numberIndex, number)
+                          ) &&
+                            !isClicked && (
+                              <View
+                                style={{ zIndex: 1 }}
+                                className="w-full h-[28px] absolute bottom-[100%]"
+                              >
+                                {/* Exibindo o resultado individual do card */}
+                                {sliceIndex === 0 &&
+                                  resultOneShow &&
+                                  betResults
+                                    .filter(
+                                      (result) =>
+                                        result.cardIndex === 1 &&
+                                        result.premio >= 0 &&
+                                        result.premio > betAmount
+                                    )
+                                    .map((result, resultIndex) => (
+                                      <TouchableOpacity
+                                        key={resultIndex}
+                                        onPress={() => handleCloseResultOne()}
+                                        className="w-full h-[28px] bg-black justify-center"
+                                      >
+                                        <View className="rounded-md flex-row justify-between items-center px-5">
+                                          <Text className="text-red-500 text-[9px] font-[MADEKenfolg]">
+                                            Card 1
+                                          </Text>
+                                          <Text className="text-red-500 text-[9px] font-[MADEKenfolg]">
+                                            You won {result.premio}
+                                          </Text>
+                                        </View>
+                                      </TouchableOpacity>
+                                    ))}
+                                {sliceIndex === 1 &&
+                                  resultTwoShow &&
+                                  betResults
+                                    .filter(
+                                      (result) =>
+                                        result.cardIndex === 2 &&
+                                        result.premio >= 0 &&
+                                        result.premio > betAmount
+                                    )
+                                    .map((result, resultIndex) => (
+                                      <TouchableOpacity
+                                        key={resultIndex}
+                                        onPress={() => handleCloseResultTwo()}
+                                        className="w-full h-[28px] bg-black justify-center"
+                                      >
+                                        <View className="rounded-md flex-row justify-between items-center px-5 z-10">
+                                          <Text className="text-red-500 text-[9px] font-[MADEKenfolg]">
+                                            Card 2
+                                          </Text>
+                                          <Text className="text-red-500 text-[9px] font-[MADEKenfolg]">
+                                            You won {result.premio}
+                                          </Text>
+                                        </View>
+                                      </TouchableOpacity>
+                                    ))}
+                              </View>
+                            )}
+
                           <TouchableOpacity
                             className="justify-center items-center w-[49.7%] rounded-md"
-                            onPress={() => handleRandomNumbers(index + 2)}
+                            onPress={() => handleRandomNumbers(sliceIndex)} // Ajuste do índice para corresponder ao número do card
                           >
                             <Image
                               source={require("../../assets/randomButton.png")}
@@ -682,11 +703,163 @@ export default function Game() {
                           </TouchableOpacity>
                           <TouchableOpacity
                             className="justify-center items-center w-[49.7%] rounded-md"
-                            onPress={() => toggleCardActivation(index + 2)}
+                            onPress={() => toggleCardActivation(sliceIndex)} // Ajuste do índice para corresponder ao número do card
                           >
                             <Image
                               source={require("../../assets/deactivateButton.png")}
+                              className="w-full h-[25px] rounded-md mt-[1px] pr-[1px]"
+                              resizeMode="stretch"
+                            />
+                          </TouchableOpacity>
+                        </View>
+                      )}
+                    </View>
+                  </ImageBackground>
+                </View>
+              ))}
+            </View>
+
+            <View className="flex-row w-[50%]">
+              {cards.slice(2, 4).map((card, sliceIndex) => (
+                <View
+                  key={sliceIndex + 2}
+                  className="w-full h-full relative pl-[2px]"
+                >
+                  <ImageBackground
+                    source={
+                      card.isActive
+                        ? isClicked
+                          ? require("../../assets/card.png")
+                          : card.selectedNumbers.some((number, numberIndex) =>
+                              isNumberCorrect(numberIndex, number)
+                            )
+                          ? require("../../assets/card-win.png")
+                          : require("../../assets/card.png")
+                        : require("../../assets/Card-bg-empty.png") // Usar imagem de fundo quando o cartão estiver desativado
+                    }
+                    resizeMode="stretch"
+                    className="w-full h-full items-center py-[2px]"
+                  >
+                    <View className="flex-col w-full justify-center px-[3.6%] pt-[4%] pb-[7%]">
+                      <View className="w-full justify-center flex-row">
+                        {card.isActive ? (
+                          card.selectedNumbers.map((number, numberIndex) => (
+                            <SelectedNumberCard
+                              key={numberIndex}
+                              number={number}
+                              onPress={(newNumber: number) => {
+                                setIsClicked(true);
+                                handleNumberChange(
+                                  sliceIndex + 2,
+                                  numberIndex,
+                                  newNumber
+                                );
+                              }}
+                              isCorrect={isNumberCorrect(numberIndex, number)}
+                              isClicked={isClicked}
+                            />
+                          ))
+                        ) : (
+                          <TouchableOpacity
+                            className="justify-center p-10 items-center w-full h-full"
+                            onPress={() => toggleCardActivation(sliceIndex + 2)}
+                          >
+                            <Image
+                              source={require("../../assets/activateButton.png")}
+                              className="w-[116px] h-[22px] rounded-md"
+                              resizeMode="stretch"
+                            />
+                          </TouchableOpacity>
+                        )}
+                      </View>
+
+                      {card.isActive && (
+                        <View className="flex-row justify-between w-full mt-[5px]">
+                          {card.selectedNumbers.some((number, numberIndex) =>
+                            isNumberCorrect(numberIndex, number)
+                          ) &&
+                            !isClicked && (
+                              <View className="w-full h-[28px] absolute bottom-[100%]">
+                                {/* Exibindo o resultado individual do card */}
+                                {sliceIndex === 0 &&
+                                  resultThirdShow &&
+                                  betResults
+                                    .filter(
+                                      (result) =>
+                                        result.cardIndex === 3 &&
+                                        result.premio >= 0 &&
+                                        result.premio > betAmount
+                                    )
+                                    .map(
+                                      (result, resultIndex) => (
+                                        // Adicionando console.log(sliceIndex) aqui
+                                        (
+                                          <TouchableOpacity
+                                            key={resultIndex}
+                                            onPress={() =>
+                                              handleCloseResultThird()
+                                            }
+                                            className="w-full h-[28px] bg-black justify-center"
+                                          >
+                                            <View className="rounded-md flex-row justify-between items-center px-5">
+                                              <Text className="text-red-500 text-[9px] font-[MADEKenfolg]">
+                                                Card 3
+                                              </Text>
+
+                                              <Text className="text-red-500 text-[9px] font-[MADEKenfolg]">
+                                                You won {result.premio}
+                                              </Text>
+                                            </View>
+                                          </TouchableOpacity>
+                                        )
+                                      )
+                                    )}
+                                {sliceIndex === 1 &&
+                                  resultFourShow &&
+                                  betResults
+                                    .filter(
+                                      (result) =>
+                                        result.cardIndex === 4 &&
+                                        result.premio >= 0 &&
+                                        result.premio > betAmount
+                                    )
+                                    .map((result, resultIndex) => (
+                                      <TouchableOpacity
+                                        key={resultIndex}
+                                        onPress={() => handleCloseResultFour()}
+                                        className="w-full h-[28px] bg-black justify-center"
+                                      >
+                                        <View className="rounded-md flex-row justify-between items-center px-5 z-10">
+                                          <Text className="text-red-500 text-[9px] font-[MADEKenfolg]">
+                                            Card 4
+                                          </Text>
+
+                                          <Text className="text-red-500 text-[9px] font-[MADEKenfolg]">
+                                            You won {result.premio}
+                                          </Text>
+                                        </View>
+                                      </TouchableOpacity>
+                                    ))}
+                              </View>
+                            )}
+
+                          <TouchableOpacity
+                            className="justify-center items-center w-[49.7%] rounded-md"
+                            onPress={() => handleRandomNumbers(sliceIndex + 2)} // Ajuste do índice para corresponder ao número do card
+                          >
+                            <Image
+                              source={require("../../assets/randomButton.png")}
                               className="w-full h-[25px] rounded-md mt-[1px]"
+                              resizeMode="stretch"
+                            />
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            className="justify-center items-center w-[49.7%] rounded-md"
+                            onPress={() => toggleCardActivation(sliceIndex + 2)} // Ajuste do índice para corresponder ao número do card
+                          >
+                            <Image
+                              source={require("../../assets/deactivateButton.png")}
+                              className="w-full h-[25px] rounded-md mt-[1px] pr-[1px]"
                               resizeMode="stretch"
                             />
                           </TouchableOpacity>
@@ -732,6 +905,7 @@ export default function Game() {
                 </View>
               )}
             </View>
+
             {/* Relatory */}
             {betResults.length >= 0 && (
               <ImageBackground

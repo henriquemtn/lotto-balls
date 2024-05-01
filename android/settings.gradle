@@ -1,4 +1,4 @@
-rootProject.name = 'golden-lotto'
+rootProject.name = 'lotto-balls'
 
 dependencyResolutionManagement {
   versionCatalogs {

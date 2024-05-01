@@ -35,6 +35,8 @@ export default function TopBar() {
             const userData = doc.data();
             if (userData && userData.coins) {
               setMoedas(userData.coins);
+            } else {
+              setMoedas(0);
             }
           });
 
@@ -42,7 +44,6 @@ export default function TopBar() {
         const userRef = firestore().collection("users").doc(currentUser.uid);
         userRef.get().then((docSnapshot) => {
           if (!docSnapshot.exists) {
-            console.log(currentUser.photoURL);
             userRef
               .set({
                 displayName: currentUser.displayName,
@@ -75,7 +76,6 @@ export default function TopBar() {
     } else {
       // Se for uma URL, use-a diretamente
       userImageSource = { uri: user.photoURL };
-      console.log(user.photoURL);
     }
   }
   return (
@@ -124,7 +124,7 @@ export default function TopBar() {
         />
         <View className="bg-[#261B16] py-1 flex-row rounded-full items-center px-4">
           <Text className="text-[14px] text-white font-[MADEKenfolg]">
-            ${moedas}
+            $ {moedas}
           </Text>
         </View>
         <TouchableOpacity className="">

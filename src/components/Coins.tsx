@@ -18,6 +18,8 @@ export default function Coins() {
             const userData = doc.data();
             if (userData && userData.coins) {
               setMoedas(userData.coins);
+            } else {
+              setMoedas(0);
             }
           });
 

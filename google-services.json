@@ -1,41 +1,49 @@
 {
   "project_info": {
-    "project_number": "768922554564",
-    "project_id": "golden-lotto-7e6e6",
-    "storage_bucket": "golden-lotto-7e6e6.appspot.com"
+    "project_number": "1029275881324",
+    "project_id": "lottogame-fb05d",
+    "storage_bucket": "lottogame-fb05d.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:768922554564:android:eb21629006860a5c9df991",
+        "mobilesdk_app_id": "1:1029275881324:android:dd81e9496575bd9d56ed49",
         "android_client_info": {
-          "package_name": "com.starwhenry.goldenlotto"
+          "package_name": "com.starwhenry.lottoballs"
         }
       },
       "oauth_client": [
         {
-          "client_id": "768922554564-0k7l809c773qn4cj7bdg8fk13m5b40vs.apps.googleusercontent.com",
+          "client_id": "1029275881324-cvgsg0q0dvlb8u2nsfot77v8qq8vmedf.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.starwhenry.goldenlotto",
-            "certificate_hash": "67a4dfaa7ea488188c6bc5d8524f668ef637ed99"
+            "package_name": "com.starwhenry.lottoballs",
+            "certificate_hash": "9e0438f7bb5cacc37a4b8c0aaf63855c83345090"
           }
         },
         {
-          "client_id": "768922554564-lc85l2r31pch2v82imrmo7ovlc1bgna9.apps.googleusercontent.com",
+          "client_id": "1029275881324-qch8dn8b7moevuv2p4qq94kklc3mv4s7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.starwhenry.lottoballs",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "1029275881324-ecg9au35kb4pkubal0pbu996e6ud0uag.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyB8yFeUwuCRVDS2Q08kPwEWeRkKVaWnxJQ"
+          "current_key": "AIzaSyBc2r0O7JWD626rWG7UuMvaTjUavyt0QQE"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "768922554564-lc85l2r31pch2v82imrmo7ovlc1bgna9.apps.googleusercontent.com",
+              "client_id": "1029275881324-ecg9au35kb4pkubal0pbu996e6ud0uag.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

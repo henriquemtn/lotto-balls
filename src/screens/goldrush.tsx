@@ -184,9 +184,6 @@ export default function GoldRush() {
       }
     }
   };
-  
-  
-  
 
   const initializeRockValues = () => {
     const initialValues = Array(10).fill(0).map(generateRandomNumber);

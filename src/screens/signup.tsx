@@ -25,7 +25,7 @@ export default function SignUp() {
 
   GoogleSignin.configure({
     webClientId:
-      "768922554564-lc85l2r31pch2v82imrmo7ovlc1bgna9.apps.googleusercontent.com",
+      "1029275881324-ecg9au35kb4pkubal0pbu996e6ud0uag.apps.googleusercontent.com",
   });
 
   const onGoogleButtonPress = async () => {
