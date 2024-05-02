@@ -30,6 +30,22 @@
           }
         },
         {
+          "client_id": "1029275881324-t5cbkoi11561avuoau205tpke7mqne15.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.starwhenry.lottoballs",
+            "certificate_hash": "2fefd3a6258d6a5fd4843a663fdbde154ee5b512"
+          }
+        },
+        {
+          "client_id": "1029275881324-ub7injpcte4csmjd0t2j5sppncaebfr4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.starwhenry.lottoballs",
+            "certificate_hash": "4ebeb6eaf12b1041ffd33dc3988517eb62f29f47"
+          }
+        },
+        {
           "client_id": "1029275881324-ecg9au35kb4pkubal0pbu996e6ud0uag.apps.googleusercontent.com",
           "client_type": 3
         }

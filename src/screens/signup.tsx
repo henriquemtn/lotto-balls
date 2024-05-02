@@ -13,7 +13,6 @@ import { useNavigation } from "@react-navigation/native";
 import { StackTypes } from "../routes/router";
 
 import { FontAwesome } from "@expo/vector-icons";
-import Button from "../components/Button";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { LinearGradient } from "expo-linear-gradient";
 

@@ -2,20 +2,12 @@ import {
   StyleSheet,
   Image,
   ImageBackground,
-  View,
   Dimensions,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import Animated, {
-  Easing,
-  FadeInRight,
-  PinwheelIn,
   SlideInRight,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
 } from "react-native-reanimated";
-import { Keyframe } from "react-native-reanimated";
 
 const ballImages: { [key: number]: any } = {
   0: require("../../assets/Balls/ball-0.png"),

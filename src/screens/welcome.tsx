@@ -53,7 +53,7 @@ export default function Welcome() {
           source={require("../../assets/goldenlotto.png")}
         />
 
-        {loadingComplete ? ( // Verifica se o carregamento está completo
+        {loadingComplete ? (
           <TouchableOpacity
             onPress={() => navigation.navigate("SignIn")}
             className="w-1/2 mt-6  p-3 rounded-full items-center"

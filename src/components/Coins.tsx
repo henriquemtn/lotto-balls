@@ -23,7 +23,6 @@ export default function Coins() {
             }
           });
 
-        // Verifica se o documento do usuário existe. Se não existir, cria-o.
         const userRef = firestore().collection("users").doc(currentUser.uid);
         userRef.get().then((docSnapshot) => {
           if (!docSnapshot.exists) {

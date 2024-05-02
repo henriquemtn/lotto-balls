@@ -45,22 +45,16 @@ export const placeBet = async (
     console.log("select numbers index 4:", selectedNumbers[4]);
     console.log("select numbers index 5:", selectedNumbers[5]);
 
-
-
-    // Calcular a quantidade de acertos
     let acertos = 0;
     for (let i = 0; i < 6; i++) {
       if (
         selectedNumbers[i] === rouletteNumbers[i] ||
-        rouletteNumbers[i] === 10 // Considerar o número 10 como coringa
+        rouletteNumbers[i] === 10
       ) {
         acertos++;
       }
     }
 
-    //console.log("bet amount:", betAmount)
-
-    // Calcular o prêmio com base na quantidade de acertos
     let premioAcertos = 0;
     switch (acertos) {
       case 0:
@@ -71,25 +65,22 @@ export const placeBet = async (
         premioAcertos = 0;
         break;
       case 3:
-        premioAcertos = betAmount * 6; // Ajuste o prêmio para refletir a regra
+        premioAcertos = betAmount * 6; 
         break;
       case 4:
-        premioAcertos = betAmount * 30; // Ajuste o prêmio para refletir a regra
+        premioAcertos = betAmount * 30; 
         break;
       case 5:
-        premioAcertos = betAmount * 500; // Ajuste o prêmio para refletir a regra
+        premioAcertos = betAmount * 500;
         break;
       case 6:
-        premioAcertos = betAmount * 2000; // Ajuste o prêmio para refletir a regra
+        premioAcertos = betAmount * 2000;
         break;
       default:
         premioAcertos = 0;
         break;
     }
 
-    //console.log("premioAcertos:", premioAcertos)
-
-    // Calcular a quantidade de acertos do primeiro número
     let firstAcertos = 0;
     
     if (
@@ -163,12 +154,7 @@ export const placeBet = async (
         break;
     }
 
-    //console.log("Premio FirstAcertos:", premioFirstAcertos)
-
-    // Calcular o prêmio total somando os prêmios de acertos e de firstValue
     const premio = premioAcertos + premioFirstAcertos;
-
-    //console.log("premio:", premio)
 
     const lost = betAmount - premio;
 

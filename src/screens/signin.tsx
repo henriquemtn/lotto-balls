@@ -3,7 +3,6 @@ import {
   Text,
   StatusBar,
   TextInput,
-  Alert,
   TouchableOpacity,
   Image,
   ToastAndroid,
@@ -16,7 +15,6 @@ import { StackTypes } from "../routes/router";
 import * as Font from "expo-font";
 
 import { FontAwesome } from "@expo/vector-icons";
-import Button from "../components/Button";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function SignIn() {
@@ -39,6 +37,7 @@ export default function SignIn() {
   GoogleSignin.configure({
     webClientId:
       "1029275881324-ecg9au35kb4pkubal0pbu996e6ud0uag.apps.googleusercontent.com",
+      offlineAccess: true
   });
 
   const onGoogleButtonPress = async () => {

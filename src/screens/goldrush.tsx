@@ -48,7 +48,6 @@ export default function GoldRush() {
             }
           });
 
-        // Verifica se o documento do usuário existe. Se não existir, cria-o.
         const userRef = firestore().collection("users").doc(currentUser.uid);
         userRef.get().then((docSnapshot) => {
           if (!docSnapshot.exists) {
@@ -99,11 +98,9 @@ export default function GoldRush() {
       console.log("Prêmio adicionado com sucesso:", prize);
     } catch (error) {
       console.error("Erro ao adicionar prêmio à carteira:", error);
-      // Trate o erro de forma apropriada, como mostrar uma mensagem ao usuário
     }
   };
 
-  // State para armazenar os índices dos botões clicados em cada grupo
   const [selectedGroupIndices, setSelectedGroupIndices] = useState<
     Array<number>
   >([]);
@@ -113,7 +110,6 @@ export default function GoldRush() {
   };
 
   const handleRockClick = () => {
-    // Incrementa o número de cliques e verifica se excede o limite
     const updatedClickTimes = clickTimes + 1;
     setClickTimes(updatedClickTimes);
   };
@@ -129,26 +125,21 @@ export default function GoldRush() {
     updatedShowRocks[rockIndex] = false;
     setShowRocks(updatedShowRocks);
   
-    // Verifica se o índice pertence ao grupo 1 ou grupo 2
     if (group1Indices.includes(rockIndex)) {
-      // Grupo 1: Texto verde
       const updatedColors = textColors.map((color, index) =>
         group1Indices.includes(index) ? "green" : "red"
       );
       setTextColors(updatedColors);
     } else if (group2Indices.includes(rockIndex)) {
-      // Grupo 2: Texto verde
       const updatedColors = textColors.map((color, index) =>
         group2Indices.includes(index) ? "green" : "red"
       );
       setTextColors(updatedColors);
     }
   
-    // Verifica se o botão clicado é o primeiro do grupo clicado
     if (selectedGroupIndices.length === 0) {
       setSelectedGroupIndices((prevIndices) => [...prevIndices, rockIndex]);
     } else {
-      // Verifica se o botão clicado pertence ao mesmo grupo dos anteriores
       if (
         (group1Indices.includes(rockIndex) &&
           !selectedGroupIndices.every((index) => group1Indices.includes(index))) ||
@@ -160,24 +151,20 @@ export default function GoldRush() {
         setTimeout(() => {
           navigation.navigate('Game');
         }, 2000);
-        // Definir valores para as rochas restantes não clicadas
         const remainingRocks = rockValues.map((value, idx) =>
           updatedShowRocks[idx] ? generateRandomNumber() : value
         );
         setRockValues(remainingRocks);
-        // Definir cores para as rochas restantes não clicadas
         const remainingColors = remainingRocks.map((value, idx) => {
           if (group1Indices.includes(idx)) {
             return "green";
           } else if (group2Indices.includes(idx)) {
             return "red";
           }
-          return "green"; // Valor padrão
+          return "green";
         });
         setTextColors(remainingColors);
-        // Resetar os índices do grupo selecionado
         setSelectedGroupIndices([]);
-        // Mostrar todas as rochas restantes com valores e cores
         setShowRocks(Array(10).fill(false));
       } else {
         setSelectedGroupIndices((prevIndices) => [...prevIndices, rockIndex]);
@@ -191,11 +178,8 @@ export default function GoldRush() {
   };
 
   useEffect(() => {
-    // Cria uma lista de índices para os grupos
     const indices = Array.from({ length: 10 }, (_, i) => i);
-    // Embaralha os índices aleatoriamente
     indices.sort(() => Math.random() - 0.5);
-    // Divide os índices em dois grupos de 5 cada
     const group1 = indices.slice(0, 5);
     const group2 = indices.slice(5);
 
@@ -205,7 +189,6 @@ export default function GoldRush() {
     console.log("Grupo 1:", group1);
     console.log("Grupo 2:", group2);
 
-    // Inicializa os valores das rochas
     initializeRockValues();
   }, []);
 

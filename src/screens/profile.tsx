@@ -4,7 +4,6 @@ import TopBar from "../components/TopBar";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import * as ImagePicker from "expo-image-picker";
 import { FontAwesome } from "@expo/vector-icons";
-import { StackActions } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import { StackTypes } from "../routes/router";
 import { LinearGradient } from "expo-linear-gradient";
@@ -19,7 +18,6 @@ export default function Profile() {
       .then(() => {
         navigation.navigate("SignIn");
         console.log("User signed out!");
-        // Você pode adicionar qualquer lógica adicional aqui, como navegar para outra tela
       })
       .catch((error) => {
         console.error("Error signing out:", error);
@@ -51,13 +49,11 @@ export default function Profile() {
       });
 
       if (!pickerResult.canceled && pickerResult.assets) {
-        // Access the first asset's uri
         const imageUrl = pickerResult.assets[0].uri;
         if (user) {
           await auth().currentUser?.updateProfile({ photoURL: imageUrl });
           setUser({ ...user, photoURL: imageUrl });
 
-          // Resetar a navegação para a tela inicial (Home)
           navigation.reset({
             index: 0,
             routes: [{ name: "Home" }],
